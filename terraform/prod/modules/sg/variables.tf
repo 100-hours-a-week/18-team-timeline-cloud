@@ -3,7 +3,7 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "alb_sg_id" {
-  description = "ALB의 보안 그룹 ID (ALB → Frontend 허용)"
-  type        = string
-}
+# variable "alb_sg_id" {
+#   description = "ALB의 보안 그룹 ID (ALB → Frontend 허용)"
+#   type        = string
+# }

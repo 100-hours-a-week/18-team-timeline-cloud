@@ -1,10 +1,12 @@
 provider "aws" {
-  region = "ap-northeast-2"  # 서울 리전
+  region                  = "ap-northeast-2"
+  profile                 = "default"
 }
+
 
 # 1. VPC
 module "vpc" {
-  source = "./modules/vpc"
+  source = "./modules/vpcterraform apply"
 
   cidr_block           = var.vpc_cidr_block
   public_subnet_a_id   = module.subnet.public_subnet_a_id
@@ -38,7 +40,7 @@ module "nat_gateway" {
 module "sg" {
   source = "./modules/sg"
   vpc_id = module.vpc.vpc_id
-  alb_sg_id = module.nat_gateway.alb_sg_id  # ✅ 이 이름만 쓴다
+ # alb_sg_id = module.nat_gateway.alb_sg_id  # ✅ 이 이름만 쓴다
   
 }
 
@@ -48,7 +50,7 @@ module "alb" {
   vpc_id              = module.vpc.vpc_id
   public_subnet_a_id  = module.subnet.public_subnet_a_id
   public_subnet_c_id  = module.subnet.public_subnet_c_id
-  sg_alb_id           = module.sg.sg_alb_id  # ✅ 이 이름만 쓴다
+  sg_alb_id           = module.sg.alb_sg_id  # ✅ 이 이름만 쓴다
 }
 
 # 6. EC2 (frontend, backend + target group attachment)
