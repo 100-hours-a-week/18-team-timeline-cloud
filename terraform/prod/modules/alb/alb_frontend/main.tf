@@ -28,7 +28,7 @@ resource "aws_lb_target_group" "docker-v1-frontend-tg" {
 # 프론트엔드 리스너 (포트 80 수신)
 resource "aws_lb_listener" "docker-v1-frontend-listener" {
   load_balancer_arn = aws_lb.docker-v1-frontend-alb.arn  # ✅ 리소스 이름에 맞게 수정
-  port              = 80
+  port              = 443
   protocol          = "HTTP"
 
   default_action {
