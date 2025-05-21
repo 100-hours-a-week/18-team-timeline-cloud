@@ -13,7 +13,7 @@ private_subnet_c_cidr = "10.0.12.0/24"
 
 # EC2 공통 설정
 instance_type = "t3.micro"
-ami_id        = "ami-01711d925a1e4cc3a" # 서울 리전의 최신 Ubuntu AMI 등으로 교체 필요
+ami_id        = "ami-0fa1ca9559f1892ec" # 서울 리전의 최신 Ubuntu AMI 등으로 교체 필요
 
 # 공통 정보
 project     = "tamnara"
@@ -34,3 +34,5 @@ db_username          = "temnara18spring"
 db_password          = "temnara1818!"
 db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
+
+key_pair_name = "mvp-key-v1"

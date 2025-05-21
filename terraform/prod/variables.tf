@@ -94,3 +94,9 @@ variable "db_allocated_storage" {
   type        = number
   default     = 20
 }
+
+variable "key_pair_name" {
+  description = "SSH 접근용 EC2 키페어 이름"
+  type        = string
+}
+

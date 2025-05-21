@@ -1,54 +1,58 @@
-# EC2 인스턴스 생성 시 사용할 AMI ID
+# EC2 모듈에 필요한 변수 정의
+
 variable "ami_id" {
-  description = "EC2 인스턴스에 사용할 AMI ID"
+  description = "AMI ID for the EC2 instances (ECS Optimized)"
   type        = string
 }
 
-# EC2 인스턴스 타입 (예: t3.micro)
 variable "instance_type" {
-  description = "EC2 인스턴스 타입"
+  description = "EC2 instance type"
   type        = string
 }
 
-# EC2 인스턴스가 배치될 프라이빗 서브넷 ID (A, C)
+variable "key_pair_name" {
+  description = "Key pair name for SSH access"
+  type        = string
+}
+
 variable "private_subnet_a_id" {
-  description = "AZ A의 프라이빗 서브넷 ID"
+  description = "Private Subnet A ID"
   type        = string
 }
 
 variable "private_subnet_c_id" {
-  description = "AZ C의 프라이빗 서브넷 ID"
+  description = "Private Subnet C ID"
   type        = string
 }
 
-# 보안 그룹 ID (sg 모듈에서 받아옴)
 variable "sg_frontend_id" {
-  description = "프론트엔드 서버용 보안 그룹 ID"
+  description = "Security group ID for frontend EC2 instances"
   type        = string
 }
 
 variable "sg_backend_id" {
-  description = "백엔드 서버용 보안 그룹 ID"
+  description = "Security group ID for backend EC2 instances"
   type        = string
 }
 
-# 공통 태그 정보
 variable "project" {
-  description = "프로젝트 이름 (태그용)"
+  description = "Project name for tagging"
   type        = string
 }
 
 variable "environment" {
-  description = "배포 환경 이름 (예: production)"
+  description = "Environment name (e.g., dev, prod)"
   type        = string
 }
 
-variable "tg_frontend_arn" {
-  description = "프론트엔드용 Target Group ARN"
-  type        = string
-}
+# # EC2 인스턴스가 사용할 IAM 인스턴스 프로파일 이름
+# variable "iam_instance_profile_name" {
+#   description = "IAM Instance Profile name for ECS EC2 instances"
+#   type        = string
+# }
 
-variable "tg_backend_arn" {
-  description = "백엔드용 Target Group ARN"
-  type        = string
-}
+# variable "ecs_instance_role_name" {
+#   description = "IAM Role name to attach to ECS EC2 instances"
+#   type        = string
+# }
+
