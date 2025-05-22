@@ -59,7 +59,7 @@ resource "aws_instance" "frontend_c" {
   subnet_id              = var.private_subnet_c_id
   vpc_security_group_ids = [var.sg_frontend_id]
   key_name               = var.key_pair_name
-  #iam_instance_profile   = var.iam_instance_profile_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name 
 
   user_data = <<-EOF
     #!/bin/bash

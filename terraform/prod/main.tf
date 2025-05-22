@@ -72,8 +72,8 @@ module "ecs_backend" {
   container_image     = "346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest"
   container_port      = 8080
   desired_count       = 2
-  ecs_task_cpu        = "512"
-  ecs_task_memory     = "1024"
+  ecs_task_cpu        = "256"
+  ecs_task_memory     = "512"
   subnet_ids          = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
   security_group_ids  = [module.sg.backend_sg_id]
   target_group_arn    = module.alb_backend.backend_target_group_arn
@@ -87,8 +87,8 @@ module "ecs_frontend" {
   container_image     = "346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest"
   container_port      = 80
   desired_count       = 2
-  ecs_task_cpu        = "512"
-  ecs_task_memory     = "1024"
+  ecs_task_cpu        = "256"
+  ecs_task_memory     = "256"
   subnet_ids          = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
   security_group_ids  = [module.sg.frontend_sg_id]
   target_group_arn    = module.alb_frontend.frontend_target_group_arn

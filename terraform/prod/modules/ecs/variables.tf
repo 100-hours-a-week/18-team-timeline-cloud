@@ -51,5 +51,5 @@ variable "ecs_task_cpu" {
 
 variable "ecs_task_memory" {
   type    = number
-  default = 512
+  default = 256
 }

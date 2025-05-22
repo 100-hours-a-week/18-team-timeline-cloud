@@ -16,13 +16,14 @@ resource "aws_lb_target_group" "docker-v1-backend-tg" {
   target_type = "instance"
 
   health_check {
-    path                = "/actuator/health"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    matcher             = "200"
-  }
+  path                = "/health"
+  interval            = 60
+  timeout             = 10
+  healthy_threshold   = 3
+  unhealthy_threshold = 10
+  matcher             = "200"
+}
+
 }
 
 # 백엔드 리스너 (포트 80 수신)

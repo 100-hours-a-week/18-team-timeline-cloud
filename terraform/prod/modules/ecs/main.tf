@@ -28,6 +28,12 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_cloudwatch_log_group" "ecs" {
+  name              = "/ecs/${var.ecs_cluster_name}"
+  retention_in_days = 7
+}
+
+
 # ✅ ECS 태스크 정의
 resource "aws_ecs_task_definition" "this" {
   family                   = var.ecs_cluster_name
@@ -36,22 +42,32 @@ resource "aws_ecs_task_definition" "this" {
   cpu                      = var.ecs_task_cpu
   memory                   = var.ecs_task_memory
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-
-  container_definitions = jsonencode([
-    {
-      name      = var.container_name,
-      image     = var.container_image,
-      cpu       = 0,
-      memory    = var.ecs_task_memory,
-      essential = true,
-      portMappings = [
-        {
-          containerPort = var.container_port
-          hostPort      = var.container_port
-        }
-      ]
+  depends_on = [aws_cloudwatch_log_group.ecs]
+  
+container_definitions = jsonencode([
+  {
+    name      = var.container_name,
+    image     = var.container_image,
+    cpu       = 0,
+    memory    = var.ecs_task_memory,
+    essential = true,
+    portMappings = [
+      {
+        containerPort = var.container_port
+        hostPort      = var.container_port
+      }
+    ],
+    logConfiguration = {
+      logDriver = "awslogs",
+      options = {
+        awslogs-group         = "/ecs/${var.ecs_cluster_name}"
+        awslogs-region        = "ap-northeast-2"
+        awslogs-stream-prefix = var.container_name
+      }
     }
-  ])
+  }
+])
+
 }
 
 # ✅ ECS 서비스
