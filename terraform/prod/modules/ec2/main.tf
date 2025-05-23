@@ -78,7 +78,7 @@ resource "aws_instance" "backend_a" {
   #ami                    = var.ami_id
   ami = data.aws_ssm_parameter.ecs_ami.value
 
-  instance_type          = var.instance_type
+  instance_type          = var.instance_type_be
   subnet_id              = var.private_subnet_a_id
   vpc_security_group_ids = [var.sg_backend_id]
   key_name               = var.key_pair_name
@@ -101,7 +101,7 @@ resource "aws_instance" "backend_c" {
   #ami                    = var.ami_id
   ami = data.aws_ssm_parameter.ecs_ami.value
 
-  instance_type          = var.instance_type
+  instance_type          = var.instance_type_be
   subnet_id              = var.private_subnet_c_id
   vpc_security_group_ids = [var.sg_backend_id]
   key_name               = var.key_pair_name

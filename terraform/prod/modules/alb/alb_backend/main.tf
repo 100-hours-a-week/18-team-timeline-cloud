@@ -11,7 +11,7 @@ resource "aws_lb" "docker-v1-backend-alb" {
 resource "aws_lb_target_group" "docker-v1-backend-tg" {
   name        = "docker-v1-tg-backend"
   port        = 8080
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   vpc_id      = var.vpc_id
   target_type = "instance"
 
@@ -29,8 +29,10 @@ resource "aws_lb_target_group" "docker-v1-backend-tg" {
 # 백엔드 리스너 (포트 80 수신)
 resource "aws_lb_listener" "docker-v1-backend-listener" {
   load_balancer_arn = aws_lb.docker-v1-backend-alb.arn  # ✅ 변경
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+
+  certificate_arn = "arn:aws:acm:ap-northeast-2:346011888304:certificate/607757da-9b4e-40e0-8230-20c01b4ac547"
 
   default_action {
     type             = "forward"

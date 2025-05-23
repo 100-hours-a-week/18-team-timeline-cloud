@@ -10,6 +10,11 @@ variable "instance_type" {
   type        = string
 }
 
+variable "instance_type_be" {
+  description = "EC2 instance type"
+  type        = string
+}
+
 variable "key_pair_name" {
   description = "Key pair name for SSH access"
   type        = string

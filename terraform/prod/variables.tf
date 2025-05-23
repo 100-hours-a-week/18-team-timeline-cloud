@@ -49,6 +49,12 @@ variable "instance_type" {
   type        = string
 }
 
+variable "instance_type_be" {
+  description = "be EC2 인스턴스 타입"
+  type        = string
+}
+
+
 # 태그
 variable "project" {
   description = "프로젝트 이름"

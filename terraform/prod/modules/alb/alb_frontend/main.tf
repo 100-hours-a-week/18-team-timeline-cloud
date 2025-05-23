@@ -29,7 +29,9 @@ resource "aws_lb_target_group" "docker-v1-frontend-tg" {
 resource "aws_lb_listener" "docker-v1-frontend-listener" {
   load_balancer_arn = aws_lb.docker-v1-frontend-alb.arn  # ✅ 리소스 이름에 맞게 수정
   port              = 443
-  protocol          = "HTTP"
+  protocol          = "HTTPS"
+
+  certificate_arn = "arn:aws:acm:ap-northeast-2:346011888304:certificate/5148a950-7ad3-449d-ab32-4d4545a692ff"
 
   default_action {
     type             = "forward"

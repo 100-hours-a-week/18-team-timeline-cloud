@@ -13,6 +13,7 @@ private_subnet_c_cidr = "10.0.12.0/24"
 
 # EC2 공통 설정
 instance_type = "t3.micro"
+instance_type_be = "t3.medium"
 ami_id        = "ami-0fa1ca9559f1892ec" # 서울 리전의 최신 Ubuntu AMI 등으로 교체 필요
 
 # 공통 정보
