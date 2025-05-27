@@ -154,3 +154,46 @@ resource "aws_security_group" "backend" {
 
   tags = { Name = "backend-sg" }
 }
+
+resource "aws_security_group" "openvpn" {
+  name        = "docker-v1-sg-openvpn"
+  description = "Allow from openVPN"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port       = 1194
+    to_port         = 1194
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # 나중에 개발자 IP로 수정
+  }
+
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # 나중에 개발자 IP로 수정
+  }
+
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # 나중에 개발자 IP로 수정
+  }
+
+  ingress {
+    from_port       = 943
+    to_port         = 943
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # 나중에 개발자 IP로 수정
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "openvpn_sg" }
+}

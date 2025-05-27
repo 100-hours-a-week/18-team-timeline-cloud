@@ -30,6 +30,11 @@ variable "private_subnet_c_id" {
   type        = string
 }
 
+variable "public_subnet_a_id" {
+  description = "Public Subnet A ID"
+  type        = string
+}
+
 variable "sg_frontend_id" {
   description = "Security group ID for frontend EC2 instances"
   type        = string
@@ -37,6 +42,11 @@ variable "sg_frontend_id" {
 
 variable "sg_backend_id" {
   description = "Security group ID for backend EC2 instances"
+  type        = string
+}
+
+variable "sg_openvpn_id" {
+  description = "Security group ID for openvpn EC2 instances"
   type        = string
 }
 

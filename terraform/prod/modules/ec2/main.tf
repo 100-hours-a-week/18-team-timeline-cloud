@@ -118,3 +118,20 @@ resource "aws_instance" "backend_c" {
     Environment = var.environment
   }
 }
+
+resource "aws_instance" "openvpn" {
+  ami = "ami-0da165fc7156630d7"
+
+  instance_type          = var.instance_type
+  subnet_id              = var.public_subnet_a_id
+  vpc_security_group_ids = [var.sg_openvpn_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name
+
+  tags = {
+    Name        = "docker-v1-openvpn-server"
+    Project     = var.project
+    Environment = var.environment
+  }
+}
+
