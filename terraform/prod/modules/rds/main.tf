@@ -33,13 +33,8 @@ resource "aws_security_group" "rds" {
 
 resource "aws_db_instance" "this" {
   identifier              = "${var.project}-${var.environment}-rds"
-  allocated_storage       = var.db_allocated_storage
-  engine                  = "mysql"
-  engine_version          = "8.0"
   instance_class          = var.db_instance_class
-  username                = var.db_username
-  password                = var.db_password
-  db_name                 = var.db_name
+  snapshot_identifier     = "prod-rds-0528" 
   port                    = 3306
   multi_az                = false
   storage_encrypted       = false
@@ -52,3 +47,4 @@ resource "aws_db_instance" "this" {
     Name = "${var.project}-${var.environment}-rds"
   }
 }
+
