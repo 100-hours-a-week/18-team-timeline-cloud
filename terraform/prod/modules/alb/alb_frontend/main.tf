@@ -31,7 +31,7 @@ resource "aws_lb_listener" "docker-v1-frontend-listener" {
   port              = 443
   protocol          = "HTTPS"
 
-  certificate_arn = "arn:aws:acm:ap-northeast-2:346011888304:certificate/5148a950-7ad3-449d-ab32-4d4545a692ff"
+  certificate_arn = "arn:aws:acm:ap-northeast-2:346011888304:certificate/30f0927f-0fb0-4e93-b79e-ef89afd9f2ff"
 
   default_action {
     type             = "forward"

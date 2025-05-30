@@ -135,3 +135,7 @@ resource "aws_instance" "openvpn" {
   }
 }
 
+resource "aws_eip_association" "openvpn" {
+  instance_id   = aws_instance.openvpn.id
+  allocation_id = "eipalloc-049804da24b652d0b"
+}

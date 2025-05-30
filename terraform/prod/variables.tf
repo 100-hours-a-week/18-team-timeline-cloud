@@ -106,3 +106,14 @@ variable "key_pair_name" {
   type        = string
 }
 
+
+# Route53 설정
+variable "domain_name" {
+  description = "domain name"
+  type = string
+}
+
+variable "dns_zone_id" {
+  description = "zone_id"
+  type = string
+}

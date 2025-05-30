@@ -25,6 +25,7 @@ module "subnet" {
 
 # NAT + Private RT
 module "nat_gateway" {
+  
   source              = "./modules/nat_gateway"
   vpc_id              = module.vpc.vpc_id
   public_subnet_a_id  = module.subnet.public_subnet_a_id
@@ -105,8 +106,10 @@ module "ec2" {
 
   private_subnet_a_id  = module.subnet.private_subnet_a_id
   private_subnet_c_id  = module.subnet.private_subnet_c_id
+  public_subnet_a_id   = module.subnet.public_subnet_a_id
   sg_frontend_id       = module.sg.frontend_sg_id
   sg_backend_id        = module.sg.backend_sg_id
+  sg_openvpn_id        = module.sg.openvpn_sg_id
 
   project              = var.project
   environment          = var.environment
@@ -131,4 +134,18 @@ module "rds" {
 
   project     = var.project
   environment = var.environment
+}
+
+
+# Route53 alb_record
+module "route53" {
+  source = "./modules/route53"
+  hosted_zone_id = var.dns_zone_id
+  domain_name = var.domain_name
+
+  frontend_zone_id = module.alb_frontend.zone_id
+  frontend_dns_name = module.alb_frontend.frontend_alb_dns_name
+
+  backend_zone_id = module.alb_backend.zone_id
+  backend_dns_name = module.alb_backend.backend_alb_dns_name
 }

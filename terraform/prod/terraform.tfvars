@@ -23,7 +23,7 @@ environment = "prod"
 
 
 # ALB 설정
-alb_idle_timeout = 60
+alb_idle_timeout = 300
 
 # # 태그 공통
 # project = "3tier-web-app"
@@ -37,3 +37,8 @@ db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
 
 key_pair_name = "mvp-key-v1"
+
+
+# route53 설정
+domain_name = "tam-nara.com"
+dns_zone_id = "Z03219133C1AINV5FK5KW"
