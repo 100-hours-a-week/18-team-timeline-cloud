@@ -1,11 +1,47 @@
-# EC2 인스턴스 구성: 프론트엔드 A/C, 백엔드 A/C
-# 모두 프라이빗 서브넷에 배치되고, 외부 노출 없음
+# ✅ IAM Role for ECS EC2 등록용
+resource "aws_iam_role" "ecs_instance_role" {
+  name = "ecsInstanceRole"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_instance_policy" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_instance" {
+  name = "ecsInstanceProfile"
+  role = aws_iam_role.ecs_instance_role.name
+}
+
+data "aws_ssm_parameter" "ecs_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+}
+
+# frontend-a 인스턴스
 resource "aws_instance" "frontend_a" {
-  ami                    = var.ami_id
+  ami = data.aws_ssm_parameter.ecs_ami.value
+
   instance_type          = var.instance_type
   subnet_id              = var.private_subnet_a_id
   vpc_security_group_ids = [var.sg_frontend_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name
+
+  user_data = <<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=docker-v1-frontend-cluster >> /etc/ecs/ecs.config
+  EOF
 
   tags = {
     Name        = "docker-v1-frontend-server-a"
@@ -14,11 +50,21 @@ resource "aws_instance" "frontend_a" {
   }
 }
 
+# frontend-c 인스턴스
 resource "aws_instance" "frontend_c" {
-  ami                    = var.ami_id
+  #ami                    = var.ami_id
+  ami = data.aws_ssm_parameter.ecs_ami.value
+
   instance_type          = var.instance_type
   subnet_id              = var.private_subnet_c_id
   vpc_security_group_ids = [var.sg_frontend_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name 
+
+  user_data = <<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=docker-v1-frontend-cluster >> /etc/ecs/ecs.config
+  EOF
 
   tags = {
     Name        = "docker-v1-frontend-server-c"
@@ -27,11 +73,21 @@ resource "aws_instance" "frontend_c" {
   }
 }
 
+# backend-a 인스턴스
 resource "aws_instance" "backend_a" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
+  #ami                    = var.ami_id
+  ami = data.aws_ssm_parameter.ecs_ami.value
+
+  instance_type          = var.instance_type_be
   subnet_id              = var.private_subnet_a_id
   vpc_security_group_ids = [var.sg_backend_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name
+
+  user_data = <<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=docker-v1-backend-cluster >> /etc/ecs/ecs.config
+  EOF
 
   tags = {
     Name        = "docker-v1-backend-server-a"
@@ -40,11 +96,21 @@ resource "aws_instance" "backend_a" {
   }
 }
 
+# backend-c 인스턴스
 resource "aws_instance" "backend_c" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
+  #ami                    = var.ami_id
+  ami = data.aws_ssm_parameter.ecs_ami.value
+
+  instance_type          = var.instance_type_be
   subnet_id              = var.private_subnet_c_id
   vpc_security_group_ids = [var.sg_backend_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name
+  
+  user_data = <<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=docker-v1-backend-cluster >> /etc/ecs/ecs.config
+  EOF
 
   tags = {
     Name        = "docker-v1-backend-server-c"
@@ -53,31 +119,23 @@ resource "aws_instance" "backend_c" {
   }
 }
 
+resource "aws_instance" "openvpn" {
+  ami = "ami-0da165fc7156630d7"
 
-# 프론트엔드 A 연결
-resource "aws_lb_target_group_attachment" "frontend_a" {
-  target_group_arn = var.tg_frontend_arn
-  target_id        = aws_instance.frontend_a.id
-  port             = 80
+  instance_type          = var.instance_type
+  subnet_id              = var.public_subnet_a_id
+  vpc_security_group_ids = [var.sg_openvpn_id]
+  key_name               = var.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance.name
+
+  tags = {
+    Name        = "docker-v1-openvpn-server"
+    Project     = var.project
+    Environment = var.environment
+  }
 }
 
-# 프론트엔드 C 연결
-resource "aws_lb_target_group_attachment" "frontend_c" {
-  target_group_arn = var.tg_frontend_arn
-  target_id        = aws_instance.frontend_c.id
-  port             = 80
-}
-
-# 백엔드 A 연결
-resource "aws_lb_target_group_attachment" "backend_a" {
-  target_group_arn = var.tg_backend_arn
-  target_id        = aws_instance.backend_a.id
-  port             = 8080
-}
-
-# 백엔드 C 연결
-resource "aws_lb_target_group_attachment" "backend_c" {
-  target_group_arn = var.tg_backend_arn
-  target_id        = aws_instance.backend_c.id
-  port             = 8080
+resource "aws_eip_association" "openvpn" {
+  instance_id   = aws_instance.openvpn.id
+  allocation_id = "eipalloc-049804da24b652d0b"
 }

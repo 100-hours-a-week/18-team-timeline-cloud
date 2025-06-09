@@ -49,6 +49,12 @@ variable "instance_type" {
   type        = string
 }
 
+variable "instance_type_be" {
+  description = "be EC2 인스턴스 타입"
+  type        = string
+}
+
+
 # 태그
 variable "project" {
   description = "프로젝트 이름"
@@ -67,3 +73,47 @@ variable "alb_idle_timeout" {
 
 
 
+variable "db_name" {
+  description = "RDS DB 이름"
+  type        = string
+}
+
+variable "db_username" {
+  description = "RDS 사용자 이름"
+  type        = string
+}
+
+variable "db_password" {
+  description = "RDS 사용자 비밀번호"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_instance_class" {
+  description = "RDS 인스턴스 타입"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "RDS 스토리지(GB)"
+  type        = number
+  default     = 20
+}
+
+variable "key_pair_name" {
+  description = "SSH 접근용 EC2 키페어 이름"
+  type        = string
+}
+
+
+# Route53 설정
+variable "domain_name" {
+  description = "domain name"
+  type = string
+}
+
+variable "dns_zone_id" {
+  description = "zone_id"
+  type = string
+}

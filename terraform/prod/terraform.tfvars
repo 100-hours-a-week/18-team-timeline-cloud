@@ -13,18 +13,32 @@ private_subnet_c_cidr = "10.0.12.0/24"
 
 # EC2 공통 설정
 instance_type = "t3.micro"
-ami_id        = "ami-01711d925a1e4cc3a" # 서울 리전의 최신 Ubuntu AMI 등으로 교체 필요
+instance_type_be = "t3.small"
+ami_id        = "ami-0fa1ca9559f1892ec" # 서울 리전의 최신 Ubuntu AMI 등으로 교체 필요
 
-# # RDS 설정
-# db_username = "admin"
-# db_password = "securepassword123"
-# db_allocated_storage = 20
-# db_instance_class = "db.t3.micro"
-# db_name = "mydb"
+# 공통 정보
+project     = "tamnara"
+environment = "prod"
+
+
 
 # ALB 설정
-alb_idle_timeout = 60
+alb_idle_timeout = 300
 
-# 태그 공통
-project = "3tier-web-app"
-environment = "production"
+# # 태그 공통
+# project = "3tier-web-app"
+# environment = "production"
+
+# RDS 정보
+db_name              = "tamnara"
+db_username          = "temnara18spring"
+db_password          = "temnara1818!"
+db_instance_class    = "db.t3.micro"
+db_allocated_storage = 20
+
+key_pair_name = "mvp-key-v1"
+
+
+# route53 설정
+domain_name = "tam-nara.com"
+dns_zone_id = "Z03219133C1AINV5FK5KW"

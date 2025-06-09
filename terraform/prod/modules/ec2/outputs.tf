@@ -19,3 +19,4 @@ output "backend_c_instance_id" {
   value       = aws_instance.backend_c.id
   description = "Backend C 인스턴스 ID"
 }
+
