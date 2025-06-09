@@ -20,20 +20,39 @@ variable "key_pair_name" {
   type        = string
 }
 
-variable "private_subnet_a_id" {
-  description = "Private Subnet A ID"
-  type        = string
-}
-
-variable "private_subnet_c_id" {
-  description = "Private Subnet C ID"
-  type        = string
-}
-
+//ec2 public subnet
 variable "public_subnet_a_id" {
   description = "Public Subnet A ID"
   type        = string
 }
+
+variable "public_subnet_c_id" {
+  description = "Public Subnet A ID"
+  type        = string
+}
+
+
+//ec2 fornt subnet
+variable "private_subnet_a_front_id" {
+  description = "Private Subnet A ID"
+  type        = string
+}
+
+variable "private_subnet_c_front_id" {
+  description = "Private Subnet C ID"
+  type        = string
+}
+
+//ec2 back subnet
+variable "private_subnet_a_back_id" {
+  description = "Private Subnet A Back ID"
+  type        = string
+}
+variable "private_subnet_c_back_id" {
+  description = "Private Subnet C Back ID"
+  type        = string
+}
+
 
 variable "sg_frontend_id" {
   description = "Security group ID for frontend EC2 instances"

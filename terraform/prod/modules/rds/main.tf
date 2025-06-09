@@ -1,6 +1,6 @@
 resource "aws_db_subnet_group" "this" {
   name       = "${var.project}-${var.environment}-db-subnet-group"
-  subnet_ids = var.private_subnet_ids
+  subnet_ids =  [var.private_subnet_a_db_id, var.private_subnet_c_db_id]
 
   tags = {
     Name = "${var.project}-${var.environment}-db-subnet-group"

@@ -8,14 +8,24 @@ variable "public_subnet_a_id" {
   type        = string
 }
 
-variable "private_subnet_a_id" {
-  description = "라우팅할 Private Subnet A ID"
+# Front - A SubnetId
+variable "private_subnet_a_front_id" {
+  description = "Private Subnet A (Frontend)의 ID"
+  type        = string
+}
+# Front - C SubnetId
+variable "private_subnet_c_front_id" {
+  description = "Private Subnet C (Frontend)의 ID"
+  type        = string
+}
+# Back - A SubnetId
+variable "private_subnet_a_back_id" {
+  description = "Private Subnet A (Backend)의 ID"
   type        = string
 }
 
-variable "private_subnet_c_id" {
-  description = "라우팅할 Private Subnet C ID"
+# Back - C SubnetId
+variable "private_subnet_c_back_id" {
+  description = "Private Subnet C (Backend)의 ID"
   type        = string
 }
-
-

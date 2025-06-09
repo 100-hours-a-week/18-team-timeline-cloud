@@ -1,4 +1,4 @@
-# 1. EIP 생성 (NAT용)
+# EIP 생성 (NAT용)
 resource "aws_eip" "nat" {
   domain = "vpc"
 
@@ -7,7 +7,7 @@ resource "aws_eip" "nat" {
   }
 }
 
-# 2. NAT Gateway 생성 (Public Subnet A)
+# NAT Gateway 생성 (Public Subnet A)
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.nat.id
   subnet_id     = var.public_subnet_a_id
@@ -19,7 +19,7 @@ resource "aws_nat_gateway" "this" {
   depends_on = [aws_eip.nat]
 }
 
-# 3. Private Route Table 생성
+# Private Route Table 생성
 resource "aws_route_table" "private" {
   vpc_id = var.vpc_id
 
@@ -33,14 +33,27 @@ resource "aws_route_table" "private" {
   }
 }
 
-# 4. Private Subnet A에 라우팅 테이블 연결
-resource "aws_route_table_association" "private_a" {
-  subnet_id      = var.private_subnet_a_id
+# Private Subnet Front A에 라우팅 테이블 연결
+ resource "aws_route_table_association" "private_a_front" {
+  subnet_id      = var.private_subnet_a_front_id
   route_table_id = aws_route_table.private.id
 }
 
-# 5. Private Subnet C에 라우팅 테이블 연결
-resource "aws_route_table_association" "private_c" {
-  subnet_id      = var.private_subnet_c_id
+# Private Subnet Front C에 라우팅 테이블 연결
+resource "aws_route_table_association" "private_c_front" {
+  subnet_id      = var.private_subnet_c_front_id
   route_table_id = aws_route_table.private.id
 }
+
+# Private Subnet Back A에 라우팅 테이블 연결
+resource "aws_route_table_association" "private_a_back" {
+  subnet_id      = var.private_subnet_a_back_id
+  route_table_id = aws_route_table.private.id
+}
+
+# Private Subnet Back C에 라우팅 테이블 연결
+resource "aws_route_table_association" "private_c_back" {
+  subnet_id      = var.private_subnet_c_back_id
+  route_table_id = aws_route_table.private.id
+}
+

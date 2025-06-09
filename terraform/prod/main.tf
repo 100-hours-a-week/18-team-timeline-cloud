@@ -29,8 +29,18 @@ module "subnet" {
   az_c                   = var.az_c
   public_subnet_a_cidr   = var.public_subnet_a_cidr
   public_subnet_c_cidr   = var.public_subnet_c_cidr
-  private_subnet_a_cidr  = var.private_subnet_a_cidr
-  private_subnet_c_cidr  = var.private_subnet_c_cidr
+
+  // 프론트 서브넷 CIDR
+  private_subnet_a_front_cidr  = var.private_subnet_a_front_cidr
+  private_subnet_c_front_cidr  = var.private_subnet_c_front_cidr
+
+  // 백엔드 서브넷 CIDR
+  private_subnet_a_back_cidr  = var.private_subnet_a_back_cidr
+  private_subnet_c_back_cidr  = var.private_subnet_c_back_cidr
+
+  # DB 서브넷 CIDR
+  private_subnet_a_db_cidr  = var.private_subnet_a_db_cidr
+  private_subnet_c_db_cidr  = var.private_subnet_c_db_cidr
 }
 
 # NAT + Private RT
@@ -39,8 +49,12 @@ module "nat_gateway" {
   source              = "./modules/nat_gateway"
   vpc_id              = module.vpc.vpc_id
   public_subnet_a_id  = module.subnet.public_subnet_a_id
-  private_subnet_a_id = module.subnet.private_subnet_a_id
-  private_subnet_c_id = module.subnet.private_subnet_c_id
+
+  private_subnet_a_front_id = module.subnet.private_subnet_a_front_id
+  private_subnet_c_front_id = module.subnet.private_subnet_c_front_id
+
+  private_subnet_a_back_id  = module.subnet.private_subnet_a_back_id
+  private_subnet_c_back_id  = module.subnet.private_subnet_c_back_id
 }
 
 # Security Group
@@ -66,7 +80,7 @@ module "alb_frontend" {
 module "alb_backend" {
   source             = "./modules/alb/alb_backend"
   vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
+  private_subnet_ids = [module.subnet.private_subnet_a_back_id, module.subnet.private_subnet_c_back_id]
   sg_alb_backend_id  = module.sg.sg_alb_backend_id
 
   backend_instance_map = {
@@ -85,7 +99,7 @@ module "ecs_backend" {
   desired_count       = 2
   ecs_task_cpu        = "768"
   ecs_task_memory     = "1536"
-  subnet_ids          = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
+  subnet_ids          = [module.subnet.private_subnet_a_back_id, module.subnet.private_subnet_c_back_id]
   security_group_ids  = [module.sg.backend_sg_id]
   target_group_arn    = module.alb_backend.backend_target_group_arn
 }
@@ -100,7 +114,7 @@ module "ecs_frontend" {
   desired_count       = 2
   ecs_task_cpu        = "256"
   ecs_task_memory     = "256"
-  subnet_ids          = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
+  subnet_ids          = [module.subnet.private_subnet_a_front_id, module.subnet.private_subnet_c_front_id]
   security_group_ids  = [module.sg.frontend_sg_id]
   target_group_arn    = module.alb_frontend.frontend_target_group_arn
 }
@@ -114,9 +128,19 @@ module "ec2" {
   instance_type_be     = var.instance_type_be
   key_pair_name        = var.key_pair_name
 
-  private_subnet_a_id  = module.subnet.private_subnet_a_id
-  private_subnet_c_id  = module.subnet.private_subnet_c_id
   public_subnet_a_id   = module.subnet.public_subnet_a_id
+  public_subnet_c_id   = module.subnet.public_subnet_c_id
+  
+  //front subnet
+  private_subnet_a_front_id  = module.subnet.private_subnet_a_front_id
+  private_subnet_c_front_id  = module.subnet.private_subnet_c_front_id
+
+
+  //back subnet
+  private_subnet_a_back_id   = module.subnet.private_subnet_a_back_id 
+  private_subnet_c_back_id   = module.subnet.private_subnet_c_back_id
+
+
   sg_frontend_id       = module.sg.frontend_sg_id
   sg_backend_id        = module.sg.backend_sg_id
   sg_openvpn_id        = module.sg.openvpn_sg_id
@@ -124,7 +148,7 @@ module "ec2" {
   project              = var.project
   environment          = var.environment
 
-  # ✅ ECS에서 생성한 IAM 인스턴스 프로파일 이름 전달 (EC2가 ECS Task를 실행하기 위해 필수)
+  # ECS에서 생성한 IAM 인스턴스 프로파일 이름 전달 (EC2가 ECS Task를 실행하기 위해 필수)
   #iam_instance_profile_name = module.ecs_backend.ecs_instance_profile_name
 }
 
@@ -133,7 +157,9 @@ module "rds" {
   source = "./modules/rds"
 
   vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
+  private_subnet_a_db_id = module.subnet.private_subnet_a_db_id
+  private_subnet_c_db_id = module.subnet.private_subnet_c_db_id
+
   backend_sg_id      = module.sg.backend_sg_id
 
   db_name              = var.db_name

@@ -26,12 +26,36 @@ variable "public_subnet_c_cidr" {
   type        = string
 }
 
-variable "private_subnet_a_cidr" {
-  description = "Private Subnet A의 CIDR"
+# 프론트 CIDR
+variable "private_subnet_a_front_cidr" {
+  description = "Private Subnet A (Frontend)의 CIDR"
   type        = string
 }
 
-variable "private_subnet_c_cidr" {
-  description = "Private Subnet C의 CIDR"
+variable "private_subnet_c_front_cidr" {
+  description = "Private Subnet C (Frontend)의 CIDR"
+  type        = string
+}
+
+# 백엔드 CIDR
+variable "private_subnet_a_back_cidr" {
+  description = "Private Subnet A (Backend)의 CIDR"
+  type        = string
+}
+
+variable "private_subnet_c_back_cidr" {
+  description = "Private Subnet C (Backend)의 CIDR"
+  type        = string
+}
+
+
+#DB CIDR
+variable "private_subnet_a_db_cidr" {
+  description = "Private Subnet A (DB)의 CIDR"
+  type        = string
+}
+
+variable "private_subnet_c_db_cidr" {
+  description = "Private Subnet C (DB)의 CIDR"
   type        = string
 }

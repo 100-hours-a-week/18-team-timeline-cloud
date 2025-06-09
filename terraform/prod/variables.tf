@@ -15,15 +15,38 @@ variable "public_subnet_c_cidr" {
   type        = string
 }
 
-variable "private_subnet_a_cidr" {
+// 프론트 서브넷 CIDR
+variable "private_subnet_a_front_cidr" {
   description = "프라이빗 서브넷 A의 CIDR"
   type        = string
 }
 
-variable "private_subnet_c_cidr" {
+variable "private_subnet_c_front_cidr" {
   description = "프라이빗 서브넷 C의 CIDR"
   type        = string
 }
+
+// 백엔드 서브넷 CIDR
+variable "private_subnet_a_back_cidr" {
+  description = "프라이빗 서브넷 A의 CIDR"
+  type        = string
+}
+
+variable "private_subnet_c_back_cidr" {
+  description = "프라이빗 서브넷 C의 CIDR"
+  type        = string
+}
+
+// DB 서브넷 CIDR
+variable "private_subnet_a_db_cidr" {
+  description = "프라이빗 서브넷 A (DB)의 CIDR"
+  type        = string
+}
+variable "private_subnet_c_db_cidr" {
+  description = "프라이빗 서브넷 C (DB)의 CIDR"
+  type        = string
+}
+
 
 # 가용 영역
 variable "az_a" {

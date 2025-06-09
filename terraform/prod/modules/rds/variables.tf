@@ -2,9 +2,16 @@ variable "vpc_id" {
   type = string
 }
 
-variable "private_subnet_ids" {
-  type = list(string)
+variable "private_subnet_a_db_id" {
+  description = "Private Subnet A DB ID"
+  type        = string
 }
+
+variable "private_subnet_c_db_id" {
+  description = "Private Subnet C DB ID"
+  type        = string
+}
+
 
 variable "backend_sg_id" {
   type = string
