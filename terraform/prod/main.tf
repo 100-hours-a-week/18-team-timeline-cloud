@@ -3,6 +3,16 @@ provider "aws" {
   profile = "default"
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "ktb18-terraform-state-bucket"
+    key            = "global/s3/terraform.tfstate" # 경로 형식
+    region         = "ap-northeast-2"
+    dynamodb_table = "terraform-lock-table"
+    encrypt        = true
+  }
+}
+
 # VPC
 module "vpc" {
   source             = "./modules/vpc"
@@ -73,8 +83,8 @@ module "ecs_backend" {
   container_image     = "346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest"
   container_port      = 8080
   desired_count       = 2
-  ecs_task_cpu        = "512"
-  ecs_task_memory     = "1024"
+  ecs_task_cpu        = "768"
+  ecs_task_memory     = "1536"
   subnet_ids          = [module.subnet.private_subnet_a_id, module.subnet.private_subnet_c_id]
   security_group_ids  = [module.sg.backend_sg_id]
   target_group_arn    = module.alb_backend.backend_target_group_arn
@@ -136,7 +146,6 @@ module "rds" {
   environment = var.environment
 }
 
-
 # Route53 alb_record
 module "route53" {
   source = "./modules/route53"
@@ -149,3 +158,5 @@ module "route53" {
   backend_zone_id = module.alb_backend.zone_id
   backend_dns_name = module.alb_backend.backend_alb_dns_name
 }
+
+# peering with shared vpc
