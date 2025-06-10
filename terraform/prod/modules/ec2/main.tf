@@ -176,14 +176,40 @@ locals {
   ecs_user_data_frontend = <<-EOF
     #!/bin/bash
     set -ex
-    apt-get update -y
-    apt-get install -y docker.io curl unzip awscli
+    until curl -sSf https://aws.amazon.com/ > /dev/null; do
+      echo "Waiting for internet connection via NAT Gateway..."
+      sleep 3
+    done
+    
+    sudo apt-get update -y
+    sudo apt-get install -y docker.io curl unzip awscli python3 netfilter-persistent
 
-    systemctl enable docker
-    systemctl start docker
+    sudo systemctl enable docker
+    sudo systemctl start docker
+
+    sudo usermod -a -G docker ubuntu
+
+    # Install CloudWatch Logs agent
+    wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+    sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 
     mkdir -p /etc/ecs
+    mkdir -p /var/log/ecs
+    mkdir -p /var/lib/ecs/data
+    
+    sysctl -w net.ipv4.conf.all.route_localnet=1
+    iptables -t nat -A PREROUTING -p tcp -d 169.254.170.2 --dport 80 -j DNAT --to-destination 127.0.0.1:51679
+    iptables -t nat -A OUTPUT -d 169.254.170.2 -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 51679
+    netfilter-persistent save
+
+    # ECS Agent Configuration
     echo "ECS_CLUSTER=docker-v1-frontend-cluster" > /etc/ecs/ecs.config
+    echo "ECS_AVAILABLE_LOGGING_DRIVERS=[\"json-file\",\"awslogs\",\"syslog\",\"none\"]" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_TASK_IAM_ROLE=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_TASK_IAM_ROLE_NETWORK_HOST=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_CONTAINER_METADATA=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=1h" >> /etc/ecs/ecs.config
 
     docker run --name ecs-agent \
       --detach=true \
@@ -205,14 +231,40 @@ locals {
   ecs_user_data_backend = <<-EOF
     #!/bin/bash
     set -ex
-    apt-get update -y
-    apt-get install -y docker.io curl unzip awscli
+    until curl -sSf https://aws.amazon.com/ > /dev/null; do
+      echo "Waiting for internet connection via NAT Gateway..."
+      sleep 3
+    done
+    
+    sudo apt-get update -y
+    sudo apt-get install -y docker.io curl unzip awscli python3 netfilter-persistent
 
-    systemctl enable docker
-    systemctl start docker
+    sudo systemctl enable docker
+    sudo systemctl start docker
+
+    sudo usermod -a -G docker ubuntu
+
+    # Install CloudWatch Logs agent
+    wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+    sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 
     mkdir -p /etc/ecs
+    mkdir -p /var/log/ecs
+    mkdir -p /var/lib/ecs/data
+    
+    sysctl -w net.ipv4.conf.all.route_localnet=1
+    iptables -t nat -A PREROUTING -p tcp -d 169.254.170.2 --dport 80 -j DNAT --to-destination 127.0.0.1:51679
+    iptables -t nat -A OUTPUT -d 169.254.170.2 -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 51679
+    netfilter-persistent save
+
+    # ECS Agent Configuration
     echo "ECS_CLUSTER=docker-v1-backend-cluster" > /etc/ecs/ecs.config
+    echo "ECS_AVAILABLE_LOGGING_DRIVERS=[\"json-file\",\"awslogs\",\"syslog\",\"none\"]" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_TASK_IAM_ROLE=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_TASK_IAM_ROLE_NETWORK_HOST=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENABLE_CONTAINER_METADATA=true" >> /etc/ecs/ecs.config
+    echo "ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=1h" >> /etc/ecs/ecs.config
 
     docker run --name ecs-agent \
       --detach=true \
