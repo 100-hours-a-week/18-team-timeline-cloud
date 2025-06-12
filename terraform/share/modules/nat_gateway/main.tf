@@ -33,6 +33,27 @@ resource "aws_route_table" "private" {
   }
 }
 
+# Private DB Route Table 생성
+resource "aws_route_table" "private_db" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "docker-v1-privateRT-db"
+  }
+}
+
+# Private Subnet A DB에 라우팅 테이블 연결
+resource "aws_route_table_association" "private_a_db" {
+  subnet_id      = var.private_subnet_a_db_id
+  route_table_id = aws_route_table.private_db.id 
+}
+
+# Private Subnet C DB에 라우팅 테이블 연결
+resource "aws_route_table_association" "private_c_db" {
+  subnet_id      = var.private_subnet_c_db_id
+  route_table_id = aws_route_table.private_db.id 
+}
+
 # Private Subnet Front A에 라우팅 테이블 연결
  resource "aws_route_table_association" "private_a_front" {
   subnet_id      = var.private_subnet_a_front_id

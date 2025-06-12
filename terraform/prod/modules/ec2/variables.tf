@@ -53,16 +53,17 @@ variable "private_subnet_c_back_id" {
   type        = string
 }
 
-
+//sg frontend
 variable "sg_frontend_id" {
   description = "Security group ID for frontend EC2 instances"
   type        = string
 }
-
+//sg backend
 variable "sg_backend_id" {
   description = "Security group ID for backend EC2 instances"
   type        = string
 }
+
 
 variable "sg_openvpn_id" {
   description = "Security group ID for openvpn EC2 instances"

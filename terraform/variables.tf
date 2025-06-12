@@ -140,3 +140,20 @@ variable "dns_zone_id" {
   description = "zone_id"
   type = string
 }
+
+
+
+# variable "dev_ami_id" {
+#   description = "AMI ID for dev EC2"
+#   type        = string
+# }
+
+# variable "dev_instance_type" {
+#   description = "Instance type for dev EC2"
+#   type        = string
+# }
+
+# variable "dev_key_pair_name" {
+#   description = "Key pair name for dev EC2"
+#   type        = string
+# }

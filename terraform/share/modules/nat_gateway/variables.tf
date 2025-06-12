@@ -29,3 +29,15 @@ variable "private_subnet_c_back_id" {
   description = "Private Subnet C (Backend)의 ID"
   type        = string
 }
+
+# DB - A SubnetId
+variable "private_subnet_a_db_id" {
+  description = "Private Subnet A (RDS)의 ID"
+  type        = string
+}
+
+# DB - C SubnetId
+variable "private_subnet_c_db_id" {
+  description = "Private Subnet C (RDS)의 ID"
+  type        = string
+}
