@@ -186,3 +186,28 @@ module "route53" {
 }
 
 # peering with shared vpc
+data "aws_vpc" "shared" {
+  id = var.shared_vpc_id  
+}
+
+data "aws_route_tables" "shared" {
+  vpc_id = data.aws_vpc.shared.id
+}
+
+# VPC Peering 연결
+module "vpc_peering" {
+  source = "./modules/peering"
+  
+  requester_vpc_id = data.aws_vpc.shared.id
+  accepter_vpc_id  = module.vpc.vpc_id
+  
+  requester_vpc_cidr = data.aws_vpc.shared.cidr_block
+  accepter_vpc_cidr  = module.vpc.vpc_cidr_block
+  
+  requester_route_table_ids = data.aws_route_tables.shared.ids
+  
+  accepter_route_table_ids = {
+    "public"  = module.vpc.public_route_table_id
+    "private" = module.nat_gateway.private_route_table_id
+  }
+}

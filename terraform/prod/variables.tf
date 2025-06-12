@@ -140,3 +140,10 @@ variable "dns_zone_id" {
   description = "zone_id"
   type = string
 }
+
+# peering 설정정
+
+variable "shared_vpc_id" {
+  description = "shared_vpc_id"
+  type = string
+}
