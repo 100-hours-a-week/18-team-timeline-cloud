@@ -141,6 +141,11 @@ variable "dns_zone_id" {
   type = string
 }
 
+# peering vpc id
+variable "peering_vpc_id" {
+  description = "peering_vpc_id"
+  type = string
+}
 
 
 # variable "dev_ami_id" {
@@ -157,3 +162,4 @@ variable "dns_zone_id" {
 #   description = "Key pair name for dev EC2"
 #   type        = string
 # }
+

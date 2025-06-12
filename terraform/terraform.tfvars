@@ -54,3 +54,6 @@ key_pair_name = "mvp-key-v1"
 # route53 설정
 domain_name = "tam-nara.com"
 dns_zone_id = "Z03219133C1AINV5FK5KW"
+
+# peering vpc id
+peering_vpc_id = "vpc-0293cca3cb29f35f1"
