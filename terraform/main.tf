@@ -113,6 +113,7 @@ module "dev_ec2" {
   sg_backend_id  = module.dev_sg.sg_backend_id
   sg_reverse_proxy_id = module.dev_sg.sg_reverse_proxy_id
   sg_db_id = module.dev_sg.sg_db_id
+  
 
   project     = var.project
   environment = var.environment
