@@ -94,6 +94,7 @@ locals {
     done
     
     sudo apt-get update -y
+    sudo apt install mysql-client -y
     sudo apt-get install -y docker.io curl unzip awscli python3 netfilter-persistent
 
     sudo systemctl enable docker

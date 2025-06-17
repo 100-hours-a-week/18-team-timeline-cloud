@@ -27,3 +27,9 @@ variable "backend_dns_name" {
   description = "DNS name of the backend ALB"
   type        = string
 }
+
+
+variable "proxy_ec2_ip" {
+  description = "퍼블릭 프록시 EC2 인스턴스의 퍼블릭 IP"
+  type        = string
+}

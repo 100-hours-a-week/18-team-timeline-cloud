@@ -12,3 +12,4 @@ output "private_route_table_id" {
 #   value       = aws_security_group.alb.id
 #   description = "ALB 보안 그룹 ID"
 # }
+

@@ -207,6 +207,8 @@ module "route53" {
   frontend_dns_name   = module.alb_frontend.frontend_alb_dns_name
   backend_zone_id     = module.alb_backend.zone_id
   backend_dns_name    = module.alb_backend.backend_alb_dns_name
+
+  proxy_ec2_ip        = module.dev_ec2.reverse_proxy_public_ip
 }
 
 # Peering

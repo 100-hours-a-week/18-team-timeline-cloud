@@ -34,3 +34,4 @@ variable "accepter_route_table_ids" {
 locals {
   accepter_route_table_id_list = values(var.accepter_route_table_ids)
 }
+

@@ -15,6 +15,40 @@ resource "aws_instance" "frontend_a" {
   }
 }
 
+locals {
+  ec2_user_data_backend = <<-EOF
+    #!/bin/bash
+    set -ex
+    until curl -sSf https://aws.amazon.com/ > /dev/null; do
+      echo "Waiting for internet connection via NAT Gateway..."
+      sleep 3
+    done
+
+    # 시스템 업데이트 및 도구 설치
+    sudo apt update -y
+    sudo apt install -y unzip curl docker.io
+
+    # AWS CLI 설치
+    sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    sudo unzip awscliv2.zip
+    sudo ./aws/install
+
+    # Docker 데몬 시작 및 부팅 시 자동 실행 설정
+    sudo systemctl start docker
+    sudo systemctl enable docker
+
+    # Docker 네트워크 생성 (이미 존재하면 스킵)
+    sudo docker network inspect tamnara-network >/dev/null 2>&1 || \
+    sudo docker network create tamnara-network
+
+    # 로그로 확인
+    echo "✅ Docker와 tamnara-network 설정 완료" >> /var/log/user-data.log
+  EOF
+}
+
+
+
+
 
 # ─────────────────────────────────────────────────────
 # Backend EC2 Instances
@@ -27,6 +61,7 @@ resource "aws_instance" "backend_a" {
   key_name               = var.key_pair_name
   private_ip             = "10.0.20.5"   #프라이빗 Ip 고정
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
+  user_data              = local.ec2_user_data_backend
 
   tags = {
     Name        = "docker-v1-backend-server-a-dev"
@@ -40,15 +75,28 @@ resource "aws_instance" "backend_a" {
 # ─────────────────────────────────────────────────────
 
 resource "aws_instance" "mysql" {
-  ami                    = "ami-06097435277f6d1a5"
+  ami                    = "ami-0c771de2b76d038a1"
   instance_type          = "t3.micro"
   subnet_id              = var.private_subnet_a_db_id
   vpc_security_group_ids = [var.sg_db_id]
   key_name               = var.key_pair_name
-  private_ip             = "10.0.30.5" # 프라이빗 Ip 고정
+  private_ip             = "10.0.30.5" # 프라이빗 IP 고정
+
+  user_data = <<-EOF
+#!/bin/bash
+echo "🚀 EC2 부팅 후 docker restart 시작: $(date)" >> /home/ubuntu/userdata.log
+
+# Docker 데몬이 확실히 올라오길 기다림 (안정성 보장용)
+sleep 5
+
+# MySQL Docker 컨테이너 재시작
+sudo docker restart mysql-tamnara >> /home/ubuntu/userdata.log 2>&1
+
+echo "✅ docker restart 완료: $(date)" >> /home/ubuntu/userdata.log
+EOF
 
   tags = {
-    Name = "dev-mysql"
+    Name        = "dev-mysql"
     Project     = var.project
     Environment = var.environment
   }

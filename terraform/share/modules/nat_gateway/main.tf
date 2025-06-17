@@ -19,19 +19,40 @@ resource "aws_nat_gateway" "this" {
   depends_on = [aws_eip.nat]
 }
 
-# Private Route Table 생성
+# # Private Route Table 생성
+# resource "aws_route_table" "private" {
+#   vpc_id = var.vpc_id
+
+#   route {
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.this.id
+#   }
+
+#   tags = {
+#     Name = "docker-v1-privateRT"
+#   }
+# }
+
+# 라우팅 테이블만 정의 (route 블록 제거)
 resource "aws_route_table" "private" {
   vpc_id = var.vpc_id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this.id
-  }
 
   tags = {
     Name = "docker-v1-privateRT"
   }
 }
+
+# NAT Gateway 경로
+resource "aws_route" "nat_gateway_route" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this.id
+  
+  lifecycle {
+    ignore_changes = [destination_cidr_block] # 중복 방지
+  }
+}
+
 
 # Private DB Route Table 생성
 resource "aws_route_table" "private_db" {
