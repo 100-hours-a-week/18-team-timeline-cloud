@@ -34,7 +34,7 @@ resource "aws_security_group" "rds" {
 resource "aws_db_instance" "this" {
   identifier              = "${var.project}-${var.environment}-rds"
   instance_class          = var.db_instance_class
-  snapshot_identifier     = "prod-rds-0528" 
+  snapshot_identifier     = "prod-rds-0618" 
   port                    = 3306
   multi_az                = false
   storage_encrypted       = false
