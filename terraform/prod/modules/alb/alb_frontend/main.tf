@@ -5,6 +5,7 @@ resource "aws_lb" "docker-v1-frontend-alb" {
   load_balancer_type = "application"
   security_groups    = [var.sg_alb_frontend_id]
   subnets            = var.public_subnet_ids
+  idle_timeout       = 300
 }
 
 # 프론트엔드용 Target Group 생성

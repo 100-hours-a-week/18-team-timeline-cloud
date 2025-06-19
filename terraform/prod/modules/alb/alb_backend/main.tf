@@ -5,6 +5,7 @@ resource "aws_lb" "docker-v1-backend-alb" {
   load_balancer_type = "application"
   security_groups    = [var.sg_alb_backend_id]
   subnets            = var.private_subnet_ids
+  idle_timeout       = 300
 }
 
 # 백엔드 Target Group 생성
