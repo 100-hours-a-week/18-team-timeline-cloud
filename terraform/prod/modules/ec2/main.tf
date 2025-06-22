@@ -211,7 +211,7 @@ resource "aws_instance" "backend_c" {
 # OpenVPN EC2 + EIP
 # ─────────────────────────────────────────────────────
 resource "aws_instance" "openvpn" {
-  ami                    = "ami-0da165fc7156630d7"
+  ami                    = "ami-0c4d94bb44eff8915"
   instance_type          = var.instance_type
   subnet_id              = var.public_subnet_a_id
   vpc_security_group_ids = [var.sg_openvpn_id]
