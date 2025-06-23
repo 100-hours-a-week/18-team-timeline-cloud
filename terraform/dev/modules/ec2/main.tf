@@ -75,7 +75,7 @@ resource "aws_instance" "backend_a" {
 # ─────────────────────────────────────────────────────
 
 resource "aws_instance" "mysql" {
-  ami                    = "ami-0c771de2b76d038a1"
+  ami                    = "ami-047fbf2e7070b91b4"
   instance_type          = "t3.micro"
   subnet_id              = var.private_subnet_a_db_id
   vpc_security_group_ids = [var.sg_db_id]
@@ -107,7 +107,7 @@ EOF
 # Reverse Proxy EC2 Instance (Public Subnet)
 # ─────────────────────────────────────────────────────
 resource "aws_instance" "reverse_proxy" {
-  ami                         = var.ami_id
+  ami                         = "ami-099db85e6386757a5"
   instance_type               = var.instance_type
   subnet_id                   = var.public_subnet_a_id 
   associate_public_ip_address = true
