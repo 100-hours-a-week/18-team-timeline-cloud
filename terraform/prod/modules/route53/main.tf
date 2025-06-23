@@ -63,6 +63,6 @@ resource "aws_route53_record" "backend_proxy_record" {
   name    = "dev.api.${var.domain_name}" # dev.api.tam-nara.com
   type    = "A"
 
-  records = [var.proxy_ec2_ip] # 동일한 퍼블릭 IP
+  records = [var.back_ec2_ip] # 동일한 퍼블릭 IP
   ttl     = 300
 }

@@ -209,6 +209,7 @@ module "route53" {
   backend_dns_name    = module.alb_backend.backend_alb_dns_name
 
   proxy_ec2_ip        = module.dev_ec2.reverse_proxy_public_ip
+  back_ec2_ip         = module.dev_ec2.backend_a_instance_ip
 }
 
 # Peering
