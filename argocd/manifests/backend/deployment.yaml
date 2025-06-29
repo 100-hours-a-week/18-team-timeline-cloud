@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: backend-node-group  # backend 노드 그룹에 배포
+      containers:
+      - name: backend
+        image: <YOUR_ECR_REPO_URI>/backend:latest  # ECR 이미지 URI로 변경 필요
+        ports:
+        - containerPort: 8080
+        env:
+        # 환경변수 설정 (필요에 따라 수정)
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8080"
+        # RDS 연결 정보는 Secret으로 관리하는 것이 좋음
+        # - name: DB_HOST
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: backend-secrets
+        #       key: db-host
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        # 헬스체크 설정
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5 
