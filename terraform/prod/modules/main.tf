@@ -28,14 +28,11 @@ module "eks" {
   vpc_id = var.vpc_id
   kubernetes_version = "1.33"
   region = "ap-northeast-2"
-  key_name = var.key_pair_name
   
   tags = {
     Project = var.project
     Environment = var.environment
   }
-  
-  enable_bastion = true
   
   # 프론트엔드용 노드 그룹
   node_groups = [
@@ -48,7 +45,7 @@ module "eks" {
       max_size = 4
       min_size = 1
       capacity_type = "ON_DEMAND"
-      ami_type = "AL2_x86_64"
+      ami_type = "AL2023_x86_64_STANDARD"
     },
     # 백엔드용 노드 그룹
     {
@@ -60,7 +57,7 @@ module "eks" {
       max_size = 6
       min_size = 1
       capacity_type = "ON_DEMAND"
-      ami_type = "AL2_x86_64"
+      ami_type = "AL2023_x86_64_STANDARD"
     }
   ]
 }
@@ -86,8 +83,6 @@ module "eks_utils" {
   vpc_id = var.vpc_id
   public_subnet_id = var.public_subnet_a_id
   cluster_name = module.eks.cluster_name
-  cluster_endpoint = module.eks.cluster_endpoint
-  cluster_ca = module.eks.cluster_certificate_authority
   region = "ap-northeast-2"
   key_name = var.key_pair_name
   bastion_instance_type = "t3.medium"

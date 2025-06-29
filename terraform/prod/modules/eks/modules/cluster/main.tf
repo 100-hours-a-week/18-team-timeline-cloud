@@ -76,7 +76,8 @@ resource "aws_eks_cluster" "this" {
         security_group_ids = [aws_security_group.this.id]
         subnet_ids = var.private_subnet_ids
         endpoint_private_access = true
-        endpoint_public_access = false
+        endpoint_public_access = true
+        public_access_cidrs = ["0.0.0.0/0"]  # 임시로 모든 IP 허용, 나중에 제한
     }
 
     access_config {

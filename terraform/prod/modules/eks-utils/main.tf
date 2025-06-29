@@ -8,7 +8,7 @@ terraform {
 
 # Bastion Host
 module "bastion" {
-  source = "../eks/modules/bastion"
+  source = "./modules/bastion"
 
   count = var.enable_bastion ? 1 : 0
 
@@ -24,15 +24,15 @@ module "bastion" {
 
 # aws-auth ConfigMap
 module "aws_auth" {
-  source = "../eks/modules/aws_auth"
+  source = "./modules/aws_auth"
   providers = {
     kubernetes = kubernetes
   }
 
   cluster_name = var.cluster_name
-  eks_cluster_endpoint = var.cluster_endpoint
-  eks_cluster_ca = var.cluster_ca
   node_iam_role_arns = var.node_iam_role_arns
   additional_role_arns = var.enable_bastion ? [module.bastion[0].bastion_iam_role_arn] : []
   default_tags = var.default_tags
+  
+  depends_on = [module.bastion]
 } 

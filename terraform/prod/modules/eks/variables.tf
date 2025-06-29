@@ -34,16 +34,6 @@ variable "disk_size" {
   default = 30
 }
 
-variable "enable_bastion" {
-  type = bool
-  default = false
-}
-
-variable "key_name" {
-  type = string
-  description = "SSH Key name for bastion host access"
-}
-
 variable "node_groups" {
   type = list(object({
     name = string
@@ -67,7 +57,7 @@ variable "node_groups" {
       max_size = 6
       min_size = 1
       capacity_type = "ON_DEMAND"
-      ami_type = "AL2_x86_64"
+      ami_type = "AL2023_x86_64_STANDARD"
     }
   ]
   
