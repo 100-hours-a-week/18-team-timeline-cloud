@@ -41,34 +41,3 @@ module "node_groups" {
     capacity_type = each.value.capacity_type
     ami_type = each.value.ami_type
 }
-
-module "bastion" {
-    source = "./modules/bastion"
-
-    count = var.enable_bastion ? 1 : 0
-
-    name = var.name
-    vpc_id = var.vpc_id
-    subnet_id = var.public_subnet_ids[0]
-    cluster_name = module.cluster.eks_cluster_name
-    region = var.region
-    key_name = var.key_name
-
-    instance_type = "t3.medium"
-
-    default_tags = local.default_tags
-}
-
-module "aws-auth" {
-    source = "./modules/aws_auth"
-
-    cluster_name = module.cluster.eks_cluster_name
-    eks_cluster_endpoint = module.cluster.eks_cluster_endpoint
-    eks_cluster_ca = module.cluster.eks_cluster_certificate_authority
-    node_iam_role_arns = [for ng in module.node_groups : ng.node_group_iam_role_arn]
-
-    additional_role_arns = var.enable_bastion ? [module.bastion[0].bastion_iam_role_arn] : []
-    default_tags = local.default_tags
-
-    depands_on = [module.node_groups, module.cluster]
-}

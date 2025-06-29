@@ -26,7 +26,6 @@ module "eks" {
 
   name = var.project
   vpc_id = var.vpc_id
-  public_subnet_ids = [var.public_subnet_a_id, var.public_subnet_c_id]
   kubernetes_version = "1.33"
   region = "ap-northeast-2"
   key_name = var.key_pair_name
@@ -64,6 +63,41 @@ module "eks" {
       ami_type = "AL2_x86_64"
     }
   ]
+}
+
+# EKS 클러스터 outputs로 provider "kubernetes" 선언
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
+}
+
+# EKS-UTILS
+module "eks_utils" {
+  source = "./eks-utils"
+  providers = {
+    kubernetes = kubernetes
+  }
+  name = var.project
+  vpc_id = var.vpc_id
+  public_subnet_id = var.public_subnet_a_id
+  cluster_name = module.eks.cluster_name
+  cluster_endpoint = module.eks.cluster_endpoint
+  cluster_ca = module.eks.cluster_certificate_authority
+  region = "ap-northeast-2"
+  key_name = var.key_pair_name
+  bastion_instance_type = "t3.medium"
+  enable_bastion = true
+  node_iam_role_arns = [for ng in module.eks.node_groups : ng.node_group_iam_role_arn]
+  default_tags = {
+    Project = var.project
+    Environment = var.environment
+  }
+  depends_on = [module.eks]
 }
 
 # RDS

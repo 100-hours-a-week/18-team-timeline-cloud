@@ -20,7 +20,7 @@ output "cluster_certificate_authority" {
 
 output "cluster_oidc_issuer" {
   description = "OIDC Provider URL"
-  value       = module.cluster.eks_cluster_oidc_issuer
+  value       = module.cluster.eks_oidc_issuer
 }
 
 output "cluster_security_group_id" {
@@ -41,14 +41,4 @@ output "node_groups" {
       node_group_iam_role_arn = ng.node_group_iam_role_arn
     }
   }
-}
-
-output "bastion_public_ip" {
-  description = "Public IP of the bastion host"
-  value       = var.enable_bastion ? module.bastion[0].bastion_public_ip : null
-}
-
-output "bastion_iam_role_arn" {
-  description = "IAM Role ARN for the bastion host"
-  value       = var.enable_bastion ? module.bastion[0].bastion_iam_role_arn : null
 }

@@ -1,11 +1,13 @@
-data "aws_eks_cluster_auth" "this" {
-    name = var.cluster_name
+terraform {
+  required_providers {
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
+  }
 }
 
-provider "kubernetes" {
-    host = var.eks_cluster_endpoint
-    cluster_ca_certificate = base64decode(var.eks_cluster_ca)
-    token = data.aws_eks_cluster_auth.this.token
+data "aws_eks_cluster_auth" "this" {
+    name = var.cluster_name
 }
 
 locals {

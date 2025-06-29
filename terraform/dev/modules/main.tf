@@ -30,7 +30,7 @@ module "ec2" {
 
 # Route53
 module "route53" {
-  source = "../prod/modules/route53"
+  source = "./route53"
 
   hosted_zone_id = var.dns_zone_id
   domain_name    = var.domain_name
