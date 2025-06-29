@@ -27,6 +27,15 @@ resource "helm_release" "argocd" {
   version    = var.argocd_chart_version
   namespace  = kubernetes_namespace.argocd.metadata[0].name
 
+  # 안전한 삭제를 위한 옵션들
+  wait                        = false    # 삭제 시 무한 대기 방지
+  timeout                     = 300      # 5분 timeout
+  cleanup_on_fail            = true      # 실패 시 정리
+  force_update               = true      # 강제 업데이트
+  recreate_pods              = false     # Pod 재생성 방지
+  disable_webhooks           = true      # webhook 검증 무시
+  disable_openapi_validation = true      # OpenAPI 검증 무시
+
   values = [
     yamlencode({
       server = {

@@ -65,7 +65,7 @@ module "alb_controller" {
 module "argocd" {
   source = "./modules/argocd"
   
-  count = var.enable_argocd ? 1 : 0
+  count = var.enable_argocd && !var.argocd_safe_destroy ? 1 : 0
   
   providers = {
     kubernetes = kubernetes

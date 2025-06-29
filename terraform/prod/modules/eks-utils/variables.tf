@@ -50,6 +50,12 @@ variable "enable_argocd" {
   default = false
 }
 
+variable "argocd_safe_destroy" {
+  description = "Enable safe destroy mode for ArgoCD (disable before destroy)"
+  type = bool
+  default = false
+}
+
 variable "argocd_chart_version" {
   description = "Version of ArgoCD Helm chart"
   type = string

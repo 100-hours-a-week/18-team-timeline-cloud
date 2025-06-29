@@ -110,6 +110,7 @@ module "prod" {
 
   # ArgoCD 설정
   enable_argocd        = var.enable_argocd
+  argocd_safe_destroy  = var.argocd_safe_destroy
   argocd_chart_version = var.argocd_chart_version
 
   # 공통 설정
