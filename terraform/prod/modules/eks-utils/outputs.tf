@@ -28,4 +28,15 @@ output "argocd_initial_admin_password" {
 output "argocd_admin_username" {
   description = "ArgoCD admin username"
   value       = var.enable_argocd ? module.argocd[0].argocd_admin_username : null
+}
+
+# External-DNS Outputs
+output "external_dns_iam_role_arn" {
+  description = "IAM Role ARN used by External-DNS"
+  value       = var.enable_external_dns ? module.external_dns[0].external_dns_iam_role_arn : null
+}
+
+output "external_dns_service_account_name" {
+  description = "Service Account name for External-DNS"
+  value       = var.enable_external_dns ? module.external_dns[0].external_dns_service_account_name : null
 } 

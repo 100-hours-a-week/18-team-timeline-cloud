@@ -44,6 +44,18 @@ variable "enable_alb_controller" {
   default = true
 }
 
+variable "enable_external_dns" {
+  description = "Enable External-DNS"
+  type = bool
+  default = true
+}
+
+variable "domain_filters" {
+  description = "List of domains to filter for External-DNS"
+  type = list(string)
+  default = []
+}
+
 variable "enable_argocd" {
   description = "Enable ArgoCD"
   type = bool

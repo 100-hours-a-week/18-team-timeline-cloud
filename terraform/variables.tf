@@ -166,6 +166,19 @@ variable "argocd_chart_version" {
   default     = "7.7.8"
 }
 
+# External-DNS 설정
+variable "enable_external_dns" {
+  description = "Enable External-DNS"
+  type        = bool
+  default     = true
+}
+
+variable "domain_filters" {
+  description = "List of domains to filter for External-DNS"
+  type        = list(string)
+  default     = []
+}
+
 
 # variable "dev_ami_id" {
 #   description = "AMI ID for dev EC2"

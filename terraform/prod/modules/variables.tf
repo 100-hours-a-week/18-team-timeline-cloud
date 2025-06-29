@@ -134,6 +134,19 @@ variable "argocd_chart_version" {
   default     = "7.7.8"
 }
 
+# External-DNS 관련 변수
+variable "enable_external_dns" {
+  description = "Enable External-DNS"
+  type        = bool
+  default     = true
+}
+
+variable "domain_filters" {
+  description = "List of domains to filter for External-DNS"
+  type        = list(string)
+  default     = []
+}
+
 # 공통 변수
 variable "project" {
   description = "Project name for tagging"

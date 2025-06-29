@@ -61,6 +61,27 @@ module "alb_controller" {
   depends_on = [module.aws_auth]
 }
 
+# External-DNS
+module "external_dns" {
+  source = "./modules/external-dns"
+  
+  count = var.enable_external_dns ? 1 : 0
+  
+  providers = {
+    kubernetes = kubernetes
+    helm = helm
+  }
+
+  name = var.name
+  cluster_name = var.cluster_name
+  cluster_oidc_issuer = var.cluster_oidc_issuer
+  region = var.region
+  domain_filters = var.domain_filters
+  default_tags = var.default_tags
+  
+  depends_on = [module.aws_auth, module.alb_controller]
+}
+
 # ArgoCD
 module "argocd" {
   source = "./modules/argocd"
@@ -74,5 +95,5 @@ module "argocd" {
 
   argocd_chart_version = var.argocd_chart_version
   
-  depends_on = [module.aws_auth, module.alb_controller]
+  depends_on = [module.aws_auth, module.alb_controller, module.external_dns]
 } 

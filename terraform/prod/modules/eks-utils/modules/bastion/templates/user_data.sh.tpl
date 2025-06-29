@@ -39,7 +39,3 @@ echo 'export PATH=/usr/local/bin:$PATH' | sudo -u ec2-user tee -a /home/ec2-user
 # Test kubectl access
 sleep 10
 sudo -u ec2-user kubectl --kubeconfig /home/ec2-user/.kube/config get nodes || echo "kubectl 설정 완료. 몇 분 후 다시 시도해주세요."
-
-# ArgoCD 2.13.1로 다운그레이드
-chart      = "argo-cd"
-version    = "5.51.4"  # ArgoCD 2.13.1 버전

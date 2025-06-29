@@ -98,6 +98,8 @@ module "eks_utils" {
   bastion_instance_type = "t3.medium"
   enable_bastion = true
   enable_alb_controller = true
+  enable_external_dns = var.enable_external_dns
+  domain_filters = var.domain_filters
   enable_argocd = var.enable_argocd
   argocd_safe_destroy = var.argocd_safe_destroy
   argocd_chart_version = var.argocd_chart_version

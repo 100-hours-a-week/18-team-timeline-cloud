@@ -112,6 +112,9 @@ module "prod" {
   enable_argocd        = var.enable_argocd
   argocd_safe_destroy  = var.argocd_safe_destroy
   argocd_chart_version = var.argocd_chart_version
+  
+  enable_external_dns = var.enable_external_dns
+  domain_filters      = var.domain_filters
 
   # 공통 설정
   project     = var.project
