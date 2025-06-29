@@ -108,6 +108,10 @@ module "prod" {
   # OpenVPN 설정
   openvpn_eip_allocation_id = "eipalloc-049804da24b652d0b"
 
+  # ArgoCD 설정
+  enable_argocd        = var.enable_argocd
+  argocd_chart_version = var.argocd_chart_version
+
   # 공통 설정
   project     = var.project
   environment = var.environment

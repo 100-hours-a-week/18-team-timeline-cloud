@@ -55,3 +55,7 @@ dns_zone_id = "Z03219133C1AINV5FK5KW"
 
 # peering vpc id
 peering_vpc_id = "vpc-0293cca3cb29f35f1"
+
+# ArgoCD 설정
+enable_argocd        = true
+argocd_chart_version = "7.7.8"

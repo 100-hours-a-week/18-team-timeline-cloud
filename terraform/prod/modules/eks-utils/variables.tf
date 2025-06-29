@@ -44,6 +44,18 @@ variable "enable_alb_controller" {
   default = true
 }
 
+variable "enable_argocd" {
+  description = "Enable ArgoCD"
+  type = bool
+  default = false
+}
+
+variable "argocd_chart_version" {
+  description = "Version of ArgoCD Helm chart"
+  type = string
+  default = "7.7.8"
+}
+
 variable "node_iam_role_arns" {
   type = list(string)
 }

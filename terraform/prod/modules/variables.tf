@@ -115,6 +115,19 @@ variable "openvpn_eip_allocation_id" {
   type        = string
 }
 
+# ArgoCD 관련 변수
+variable "enable_argocd" {
+  description = "Enable ArgoCD"
+  type        = bool
+  default     = false
+}
+
+variable "argocd_chart_version" {
+  description = "Version of ArgoCD Helm chart"
+  type        = string
+  default     = "7.7.8"
+}
+
 # 공통 변수
 variable "project" {
   description = "Project name for tagging"

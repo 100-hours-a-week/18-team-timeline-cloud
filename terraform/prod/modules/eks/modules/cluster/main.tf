@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+    tls = {
+      source = "hashicorp/tls"
+    }
+  }
+}
+
 ###############################################
 ####               IAM Role                ####
 ###############################################
@@ -86,4 +97,24 @@ resource "aws_eks_cluster" "this" {
     }
 
     tags = var.default_tags
+}
+
+###############################################
+####         OIDC Identity Provider        ####
+###############################################
+
+# EKS 클러스터 OIDC issuer의 TLS 인증서 정보 가져오기
+data "tls_certificate" "this" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+# OIDC Identity Provider 생성 (IRSA 사용을 위해 필요)
+resource "aws_iam_openid_connect_provider" "this" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.this.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-eks-oidc-provider"
+  })
 }

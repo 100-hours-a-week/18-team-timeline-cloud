@@ -98,6 +98,8 @@ module "eks_utils" {
   bastion_instance_type = "t3.medium"
   enable_bastion = true
   enable_alb_controller = true
+  enable_argocd = var.enable_argocd
+  argocd_chart_version = var.argocd_chart_version
   node_iam_role_arns = [for ng in module.eks.node_groups : ng.node_group_iam_role_arn]
   default_tags = {
     Project = var.project

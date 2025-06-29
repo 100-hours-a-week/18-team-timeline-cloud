@@ -57,6 +57,23 @@ output "bastion_public_ip" {
   value       = module.eks_utils.bastion_public_ip
 }
 
+# ArgoCD outputs
+output "argocd_server_url" {
+  description = "ArgoCD server URL"
+  value       = module.eks_utils.argocd_server_url
+}
+
+output "argocd_initial_admin_password" {
+  description = "ArgoCD initial admin password"
+  value       = module.eks_utils.argocd_initial_admin_password
+  sensitive   = true
+}
+
+output "argocd_admin_username" {
+  description = "ArgoCD admin username"
+  value       = module.eks_utils.argocd_admin_username
+}
+
 # OpenVPN outputs
 output "openvpn_instance_id" {
   description = "OpenVPN Instance ID"

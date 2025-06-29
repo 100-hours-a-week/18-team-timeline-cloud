@@ -59,4 +59,20 @@ module "alb_controller" {
   default_tags = var.default_tags
   
   depends_on = [module.aws_auth]
+}
+
+# ArgoCD
+module "argocd" {
+  source = "./modules/argocd"
+  
+  count = var.enable_argocd ? 1 : 0
+  
+  providers = {
+    kubernetes = kubernetes
+    helm = helm
+  }
+
+  argocd_chart_version = var.argocd_chart_version
+  
+  depends_on = [module.aws_auth, module.alb_controller]
 } 

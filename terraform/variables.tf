@@ -147,6 +147,19 @@ variable "peering_vpc_id" {
   type = string
 }
 
+# ArgoCD 설정
+variable "enable_argocd" {
+  description = "Enable ArgoCD"
+  type        = bool
+  default     = false
+}
+
+variable "argocd_chart_version" {
+  description = "Version of ArgoCD Helm chart"
+  type        = string
+  default     = "7.7.8"
+}
+
 
 # variable "dev_ami_id" {
 #   description = "AMI ID for dev EC2"
