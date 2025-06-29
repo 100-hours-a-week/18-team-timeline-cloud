@@ -69,6 +69,14 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.this.token
 }
 
+provider "helm" {
+  kubernetes = {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
+    token                  = data.aws_eks_cluster_auth.this.token
+  }
+}
+
 data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_name
 }
@@ -78,15 +86,18 @@ module "eks_utils" {
   source = "./eks-utils"
   providers = {
     kubernetes = kubernetes
+    helm = helm
   }
   name = var.project
   vpc_id = var.vpc_id
   public_subnet_id = var.public_subnet_a_id
   cluster_name = module.eks.cluster_name
+  cluster_oidc_issuer = module.eks.cluster_oidc_issuer
   region = "ap-northeast-2"
   key_name = var.key_pair_name
   bastion_instance_type = "t3.medium"
   enable_bastion = true
+  enable_alb_controller = true
   node_iam_role_arns = [for ng in module.eks.node_groups : ng.node_group_iam_role_arn]
   default_tags = {
     Project = var.project

@@ -3,6 +3,9 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+    helm = {
+      source = "hashicorp/helm"
+    }
   }
 }
 
@@ -35,4 +38,25 @@ module "aws_auth" {
   default_tags = var.default_tags
   
   depends_on = [module.bastion]
+}
+
+# AWS Load Balancer Controller
+module "alb_controller" {
+  source = "./modules/alb-controller"
+  
+  count = var.enable_alb_controller ? 1 : 0
+  
+  providers = {
+    kubernetes = kubernetes
+    helm = helm
+  }
+
+  name = var.name
+  cluster_name = var.cluster_name
+  cluster_oidc_issuer = var.cluster_oidc_issuer
+  vpc_id = var.vpc_id
+  region = var.region
+  default_tags = var.default_tags
+  
+  depends_on = [module.aws_auth]
 } 

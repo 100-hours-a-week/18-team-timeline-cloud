@@ -14,6 +14,11 @@ variable "cluster_name" {
   type = string
 }
 
+variable "cluster_oidc_issuer" {
+  description = "EKS cluster OIDC issuer URL"
+  type = string
+}
+
 variable "region" {
   type = string
   default = "ap-northeast-2"
@@ -31,6 +36,12 @@ variable "bastion_instance_type" {
 variable "enable_bastion" {
   type = bool
   default = false
+}
+
+variable "enable_alb_controller" {
+  description = "Enable AWS Load Balancer Controller"
+  type = bool
+  default = true
 }
 
 variable "node_iam_role_arns" {
