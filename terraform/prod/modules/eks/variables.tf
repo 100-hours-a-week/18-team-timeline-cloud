@@ -43,6 +43,11 @@ variable "enable_bastion" {
   default = false
 }
 
+variable "key_name" {
+  type = string
+  description = "SSH Key name for bastion host access"
+}
+
 variable "node_groups" {
   type = list(object({
     name = string

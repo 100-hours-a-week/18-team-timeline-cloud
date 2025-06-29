@@ -29,6 +29,7 @@ module "eks" {
   public_subnet_ids = [var.public_subnet_a_id, var.public_subnet_c_id]
   kubernetes_version = "1.33"
   region = "ap-northeast-2"
+  key_name = var.key_pair_name
   
   tags = {
     Project = var.project

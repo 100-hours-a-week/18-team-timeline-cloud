@@ -52,9 +52,9 @@ module "bastion" {
     subnet_id = var.public_subnet_ids[0]
     cluster_name = module.cluster.eks_cluster_name
     region = var.region
+    key_name = var.key_name
 
     instance_type = "t3.medium"
-    key_name = null
 
     default_tags = local.default_tags
 }
