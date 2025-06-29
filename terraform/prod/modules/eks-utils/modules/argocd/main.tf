@@ -24,11 +24,11 @@ resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = var.argocd_chart_version
+  version    = "5.51.4"  # ArgoCD 2.13.1 - stable version
   namespace  = kubernetes_namespace.argocd.metadata[0].name
 
-  wait                        = false     # 설치 완료까지 대기
-  timeout                     = 300      # 10분 timeout
+  wait                        = true      # 설치 완료까지 대기
+  timeout                     = 600      # 10분 timeout
   cleanup_on_fail            = true      # 실패 시 정리
   force_update               = true      # 강제 업데이트
   recreate_pods              = false     # Pod 재생성 방지
