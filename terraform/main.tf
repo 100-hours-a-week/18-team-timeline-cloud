@@ -62,6 +62,10 @@ module "dev" {
   instance_type_be = var.instance_type_be
   key_pair_name    = var.key_pair_name
 
+  # Route53 설정
+  dns_zone_id = var.dns_zone_id
+  domain_name = var.domain_name
+
   # 공통 설정
   project     = var.project
   environment = var.environment
@@ -101,13 +105,8 @@ module "prod" {
   db_instance_class    = var.db_instance_class
   db_allocated_storage = var.db_allocated_storage
 
-  # Route53 설정
-  dns_zone_id = var.dns_zone_id
-  domain_name = var.domain_name
-
-  # Dev 환경 EC2 IP (Route53에서 사용)
-  proxy_ec2_ip = module.dev.reverse_proxy_public_ip
-  back_ec2_ip  = module.dev.backend_a_instance_ip
+  # OpenVPN 설정
+  openvpn_eip_allocation_id = "eipalloc-049804da24b652d0b"
 
   # 공통 설정
   project     = var.project

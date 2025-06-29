@@ -109,25 +109,9 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
-# Route53 관련 변수
-variable "dns_zone_id" {
-  description = "DNS Zone ID"
-  type        = string
-}
-
-variable "domain_name" {
-  description = "Domain name"
-  type        = string
-}
-
-# Dev 환경 EC2 IP (Route53에서 사용)
-variable "proxy_ec2_ip" {
-  description = "Dev environment proxy EC2 public IP"
-  type        = string
-}
-
-variable "back_ec2_ip" {
-  description = "Dev environment backend EC2 public IP"
+# OpenVPN 관련 변수
+variable "openvpn_eip_allocation_id" {
+  description = "OpenVPN EIP Allocation ID"
   type        = string
 }
 

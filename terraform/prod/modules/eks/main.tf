@@ -1,0 +1,74 @@
+locals {
+    default_tags = merge({
+        "Project" = var.name
+        "ManagedBy" = "Terraform"
+    },
+    var.tags)
+    
+    # 노드 그룹들이 사용하는 모든 서브넷을 수집
+    all_node_group_subnets = distinct(flatten([
+        for ng in var.node_groups : ng.subnet_ids
+    ]))
+}
+
+module "cluster" {
+    source = "./modules/cluster"
+
+    name =  var.name
+    vpc_id = var.vpc_id
+    private_subnet_ids = local.all_node_group_subnets
+    kubernetes_version = var.kubernetes_version
+
+    default_tags = local.default_tags
+    cluster_enabled_log_types = var.cluster_enabled_log_types
+}
+
+# 동적으로 노드 그룹 생성
+module "node_groups" {
+    source = "./modules/node_group"
+    for_each = { for idx, ng in var.node_groups : ng.name => ng }
+
+    name = each.value.name
+    cluster_name = module.cluster.eks_cluster_name
+    private_subnet_ids = each.value.subnet_ids
+    default_tags = local.default_tags
+
+    instance_types = each.value.instance_types
+    disk_size = each.value.disk_size
+    desired_size = each.value.desired_size
+    max_size = each.value.max_size
+    min_size = each.value.min_size
+    capacity_type = each.value.capacity_type
+    ami_type = each.value.ami_type
+}
+
+module "bastion" {
+    source = "./modules/bastion"
+
+    count = var.enable_bastion ? 1 : 0
+
+    name = var.name
+    vpc_id = var.vpc_id
+    subnet_id = var.public_subnet_ids[0]
+    cluster_name = module.cluster.eks_cluster_name
+    region = var.region
+
+    instance_type = "t3.medium"
+    key_name = null
+
+    default_tags = local.default_tags
+}
+
+module "aws-auth" {
+    source = "./modules/aws_auth"
+
+    cluster_name = module.cluster.eks_cluster_name
+    eks_cluster_endpoint = module.cluster.eks_cluster_endpoint
+    eks_cluster_ca = module.cluster.eks_cluster_certificate_authority
+    node_iam_role_arns = [for ng in module.node_groups : ng.node_group_iam_role_arn]
+
+    additional_role_arns = var.enable_bastion ? [module.bastion[0].bastion_iam_role_arn] : []
+    default_tags = local.default_tags
+
+    depands_on = [module.node_groups, module.cluster]
+}

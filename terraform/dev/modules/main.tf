@@ -26,4 +26,15 @@ module "ec2" {
 
   project     = var.project
   environment = var.environment
+}
+
+# Route53
+module "route53" {
+  source = "../prod/modules/route53"
+
+  hosted_zone_id = var.dns_zone_id
+  domain_name    = var.domain_name
+
+  proxy_ec2_ip = module.ec2.reverse_proxy_public_ip
+  back_ec2_ip  = module.ec2.backend_a_instance_ip
 } 

@@ -46,6 +46,17 @@ variable "key_pair_name" {
   type        = string
 }
 
+# Route53 관련 변수
+variable "dns_zone_id" {
+  description = "DNS Zone ID"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "Domain name"
+  type        = string
+}
+
 # 공통 변수
 variable "project" {
   description = "Project name for tagging"
