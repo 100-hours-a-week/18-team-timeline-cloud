@@ -112,6 +112,10 @@ module "prod" {
   enable_argocd        = var.enable_argocd
   argocd_safe_destroy  = var.argocd_safe_destroy
   argocd_chart_version = var.argocd_chart_version
+  enable_app_of_apps   = var.enable_app_of_apps
+  repo_url             = var.repo_url
+  target_revision      = var.target_revision
+  applications_path    = var.applications_path
   
   enable_external_dns = var.enable_external_dns
   domain_filters      = var.domain_filters

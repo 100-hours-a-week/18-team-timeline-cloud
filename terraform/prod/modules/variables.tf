@@ -134,6 +134,30 @@ variable "argocd_chart_version" {
   default     = "7.7.8"
 }
 
+variable "enable_app_of_apps" {
+  description = "Enable App of Apps pattern - automatically deploy root application"
+  type        = bool
+  default     = true
+}
+
+variable "repo_url" {
+  description = "Git repository URL for ArgoCD applications"
+  type        = string
+  default     = "https://github.com/chang18-cloud/18-team-timeline-cloud"
+}
+
+variable "target_revision" {
+  description = "Git branch/tag/commit for ArgoCD to track"
+  type        = string
+  default     = "HEAD"
+}
+
+variable "applications_path" {
+  description = "Path in git repo where ArgoCD applications are stored"
+  type        = string
+  default     = "argocd/applications"
+}
+
 # External-DNS 관련 변수
 variable "enable_external_dns" {
   description = "Enable External-DNS"

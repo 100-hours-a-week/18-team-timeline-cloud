@@ -60,6 +60,10 @@ peering_vpc_id = "vpc-0293cca3cb29f35f1"
 enable_argocd        = true
 argocd_safe_destroy  = false  # destroy 전에 true로 변경하여 ArgoCD 먼저 제거
 argocd_chart_version = "7.7.8"
+enable_app_of_apps   = true
+repo_url             = "https://github.com/chang18-cloud/18-team-timeline-cloud"
+target_revision      = "HEAD"
+applications_path    = "argocd/applications"
 
 # External-DNS 설정
 enable_external_dns = true

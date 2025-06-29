@@ -81,33 +81,63 @@ data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_name
 }
 
-# EKS-UTILS
+# ============================================================================
+# EKS UTILITIES & ADD-ONS
+# ============================================================================
+# EKS 클러스터에 필요한 모든 유틸리티와 애드온을 설치하는 모듈
+# - Bastion Host (kubectl 접근용)
+# - ALB Controller (Ingress 처리)  
+# - External-DNS (Route53 자동 DNS 관리)
+# - ArgoCD (GitOps CD 도구)
+# ============================================================================
+
 module "eks_utils" {
   source = "./eks-utils"
+  
+  # Provider 설정
   providers = {
     kubernetes = kubernetes
     helm = helm
   }
-  name = var.project
-  vpc_id = var.vpc_id
-  public_subnet_id = var.public_subnet_a_id
-  cluster_name = module.eks.cluster_name
+
+  # 기본 클러스터 설정
+  name                = var.project
+  region              = "ap-northeast-2"
+  vpc_id              = var.vpc_id
+  public_subnet_id    = var.public_subnet_a_id
+  cluster_name        = module.eks.cluster_name
   cluster_oidc_issuer = module.eks.cluster_oidc_issuer
-  region = "ap-northeast-2"
-  key_name = var.key_pair_name
-  bastion_instance_type = "t3.medium"
-  enable_bastion = true
-  enable_alb_controller = true
-  enable_external_dns = var.enable_external_dns
-  domain_filters = var.domain_filters
-  enable_argocd = var.enable_argocd
-  argocd_safe_destroy = var.argocd_safe_destroy
-  argocd_chart_version = var.argocd_chart_version
-  node_iam_role_arns = [for ng in module.eks.node_groups : ng.node_group_iam_role_arn]
+  node_iam_role_arns  = [for ng in module.eks.node_groups : ng.node_group_iam_role_arn]
+
+  # Bastion Host 설정 (SSH 접근용)
+  enable_bastion          = true
+  key_name                = var.key_pair_name
+  bastion_instance_type   = "t3.medium"
+
+  # ALB Controller 설정 (Ingress 처리)
+  enable_alb_controller   = true
+
+  # External-DNS 설정 
+  enable_external_dns     = var.enable_external_dns     # tam-nara.com 도메인 자동 관리
+  domain_filters          = var.domain_filters          # ["tam-nara.com"]
+
+  # ArgoCD 설정 
+  enable_argocd           = var.enable_argocd           # ArgoCD 설치 여부
+  argocd_safe_destroy     = var.argocd_safe_destroy     # 안전한 삭제 모드
+  argocd_chart_version    = var.argocd_chart_version    # ArgoCD Helm Chart 버전
+  
+  # App of Apps 패턴 설정 (ArgoCD 애플리케이션 자동 배포)
+  enable_app_of_apps      = var.enable_app_of_apps      # App of Apps 활성화
+  repo_url                = var.repo_url                # Git 저장소 URL
+  target_revision         = var.target_revision         # Git 브랜치/태그
+  applications_path       = var.applications_path       # 애플리케이션 manifest 경로
+
+  # 공통 태그
   default_tags = {
-    Project = var.project
+    Project     = var.project
     Environment = var.environment
   }
+
   depends_on = [module.eks]
 }
 

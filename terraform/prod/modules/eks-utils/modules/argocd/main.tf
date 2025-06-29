@@ -90,4 +90,44 @@ data "kubernetes_secret" "argocd_initial_admin_secret" {
     namespace = kubernetes_namespace.argocd.metadata[0].name
   }
   depends_on = [helm_release.argocd]
+}
+
+# App of Apps - Root Application 자동 배포
+resource "kubernetes_manifest" "app_of_apps" {
+  count = var.enable_app_of_apps ? 1 : 0
+  
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      name      = "app-of-apps"
+      namespace = kubernetes_namespace.argocd.metadata[0].name
+      labels = {
+        "app.kubernetes.io/name" = "app-of-apps"
+      }
+    }
+    spec = {
+      project = "default"
+      source = {
+        repoURL        = var.repo_url
+        targetRevision = var.target_revision
+        path           = var.applications_path
+      }
+      destination = {
+        server    = "https://kubernetes.default.svc"
+        namespace = kubernetes_namespace.argocd.metadata[0].name
+      }
+      syncPolicy = {
+        automated = {
+          prune    = true
+          selfHeal = true
+        }
+        syncOptions = [
+          "CreateNamespace=true"
+        ]
+      }
+    }
+  }
+  
+  depends_on = [helm_release.argocd]
 } 
