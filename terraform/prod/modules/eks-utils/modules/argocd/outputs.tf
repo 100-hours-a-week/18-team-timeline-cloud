@@ -5,7 +5,7 @@ output "argocd_server_url" {
 
 output "argocd_initial_admin_password" {
   description = "ArgoCD initial admin password"
-  value       = base64decode(data.kubernetes_secret.argocd_initial_admin_secret.data["password"])
+  value       = try(data.kubernetes_secret.argocd_initial_admin_secret.data["password"], "password-not-ready")
   sensitive   = true
 }
 

@@ -8,8 +8,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/chang18-cloud/18-team-timeline-cloud  
-    targetRevision: HEAD
+    repoURL: https://github.com/100-hours-a-week/18-team-timeline-cloud.git
+    targetRevision: main
     path: argocd/manifests/frontend
   destination:
     server: https://kubernetes.default.svc
