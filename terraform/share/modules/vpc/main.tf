@@ -31,15 +31,3 @@ resource "aws_route_table" "public" {
     Name = "docker-v1-publicRT"
   }
 }
-
-# 퍼블릭 라우팅 테이블을 퍼블릭 서브넷 A에 연결
-resource "aws_route_table_association" "public_a" {
-  subnet_id      = var.public_subnet_a_id
-  route_table_id = aws_route_table.public.id
-}
-
-# 퍼블릭 라우팅 테이블을 퍼블릭 서브넷 C에 연결
-resource "aws_route_table_association" "public_c" {
-  subnet_id      = var.public_subnet_c_id
-  route_table_id = aws_route_table.public.id
-}
