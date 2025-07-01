@@ -39,4 +39,15 @@ output "external_dns_iam_role_arn" {
 output "external_dns_service_account_name" {
   description = "Service Account name for External-DNS"
   value       = var.enable_external_dns ? module.external_dns[0].external_dns_service_account_name : null
+}
+
+# Frontend IRSA Outputs
+output "frontend_irsa_role_arn" {
+  description = "IAM Role ARN for Frontend IRSA"
+  value       = var.enable_frontend_irsa ? module.frontend_irsa[0].iam_role_arn : null
+}
+
+output "frontend_service_account_name" {
+  description = "Service Account name for Frontend"
+  value       = var.enable_frontend_irsa ? module.frontend_irsa[0].service_account_name : null
 } 

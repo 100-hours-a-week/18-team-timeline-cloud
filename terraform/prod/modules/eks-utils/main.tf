@@ -82,6 +82,26 @@ module "external_dns" {
   depends_on = [module.aws_auth, module.alb_controller]
 }
 
+# Frontend IRSA
+module "frontend_irsa" {
+  source = "./modules/frontend-irsa"
+  
+  count = var.enable_frontend_irsa ? 1 : 0
+  
+  providers = {
+    kubernetes = kubernetes
+  }
+
+  name = var.name
+  cluster_oidc_issuer = var.cluster_oidc_issuer
+  namespace = var.frontend_namespace
+  service_account_name = var.frontend_service_account_name
+  s3_bucket_name = var.frontend_s3_bucket_name
+  default_tags = var.default_tags
+  
+  depends_on = [module.aws_auth]
+}
+
 # ArgoCD
 module "argocd" {
   source = "./modules/argocd"
