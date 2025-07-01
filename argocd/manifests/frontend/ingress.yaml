@@ -26,6 +26,13 @@ spec:
   - host: tam-nara.com
     http:
       paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: tamnara-backend-service
+            port:
+              number: 80
       - path: /
         pathType: Prefix
         backend:
