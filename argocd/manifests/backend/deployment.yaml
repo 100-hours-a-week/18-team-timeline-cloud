@@ -43,13 +43,13 @@ spec:
         # 헬스체크 설정
         livenessProbe:
           httpGet:
-            path: /actuator/health
+            path: /health
             port: 8080
           initialDelaySeconds: 180
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /actuator/health
+            path: /health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 5 
