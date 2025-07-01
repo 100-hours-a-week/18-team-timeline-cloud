@@ -2,3 +2,4 @@
 terraform.zip
 .terraform.lock.hcl
 terraform.tfvars
+.env
