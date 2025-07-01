@@ -13,7 +13,7 @@ spec:
     path: argocd/manifests/backend
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: tamnara-prod
   syncPolicy:
     automated:
       prune: true
