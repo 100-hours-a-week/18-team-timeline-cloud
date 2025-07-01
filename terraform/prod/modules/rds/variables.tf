@@ -47,3 +47,9 @@ variable "project" {
 variable "environment" {
   type = string
 }
+
+variable "db_snapshot_identifier" {
+  description = "DB snapshot identifier to restore from (optional)"
+  type        = string
+  default     = null
+}

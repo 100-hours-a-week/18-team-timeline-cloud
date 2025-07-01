@@ -156,6 +156,7 @@ module "rds" {
   db_password          = var.db_password
   db_instance_class    = var.db_instance_class
   db_allocated_storage = var.db_allocated_storage
+  db_snapshot_identifier = var.db_snapshot_identifier
 
   project              = var.project
   environment          = var.environment

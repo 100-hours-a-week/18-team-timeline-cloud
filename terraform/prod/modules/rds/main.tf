@@ -34,7 +34,18 @@ resource "aws_security_group" "rds" {
 resource "aws_db_instance" "this" {
   identifier              = "${var.project}-${var.environment}-rds"
   instance_class          = var.db_instance_class
-  snapshot_identifier     = "prod-rds-0618" 
+  
+  # 스냅샷이 있으면 스냅샷에서 복원, 없으면 새로 생성
+  snapshot_identifier     = var.db_snapshot_identifier
+  
+  # 스냅샷이 없을 때만 DB 생성 옵션들 사용
+  allocated_storage       = var.db_snapshot_identifier == null ? var.db_allocated_storage : null
+  engine                  = var.db_snapshot_identifier == null ? "mysql" : null
+  engine_version          = var.db_snapshot_identifier == null ? "8.0" : null
+  db_name                 = var.db_snapshot_identifier == null ? var.db_name : null
+  username                = var.db_snapshot_identifier == null ? var.db_username : null
+  password                = var.db_snapshot_identifier == null ? var.db_password : null
+  
   port                    = 3306
   multi_az                = false
   storage_encrypted       = false

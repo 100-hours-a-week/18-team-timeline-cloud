@@ -109,6 +109,12 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
+variable "db_snapshot_identifier" {
+  description = "DB snapshot identifier to restore from (optional)"
+  type        = string
+  default     = null
+}
+
 # OpenVPN 관련 변수
 variable "openvpn_eip_allocation_id" {
   description = "OpenVPN EIP Allocation ID"

@@ -46,6 +46,7 @@ db_username          = "temnara18spring"
 db_password          = "temnara1818!"
 db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
+db_snapshot_identifier = "prod-rds-0618"  # 기존 스냅샷 사용. 새 DB 생성시 null 또는 주석처리
 
 key_pair_name = "mvp-key-v1"
 
@@ -60,7 +61,7 @@ peering_vpc_id = "vpc-0293cca3cb29f35f1"
 enable_argocd        = true
 argocd_safe_destroy  = false  # destroy 전에 true로 변경하여 ArgoCD 먼저 제거
 argocd_chart_version = "7.7.8"
-enable_app_of_apps   = true
+enable_app_of_apps   = false  # 첫 배포시 false로 설정
 repo_url             = "https://github.com/100-hours-a-week/18-team-timeline-cloud.git"
 target_revision      = "main"
 applications_path    = "argocd/applications"

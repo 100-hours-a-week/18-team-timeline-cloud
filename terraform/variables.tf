@@ -124,6 +124,12 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
+variable "db_snapshot_identifier" {
+  description = "복원할 DB 스냅샷 식별자 (선택사항 - 설정하지 않으면 새 DB 생성)"
+  type        = string
+  default     = null
+}
+
 variable "key_pair_name" {
   description = "SSH 접근용 EC2 키페어 이름"
   type        = string
