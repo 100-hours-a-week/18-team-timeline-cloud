@@ -16,9 +16,24 @@ spec:
     spec:
       nodeSelector:
         eks.amazonaws.com/nodegroup: frontend-node-group  # frontend 노드 그룹에 배포
+      initContainers:
+      - name: config-downloader
+        image: amazon/aws-cli:latest
+        command:
+        - sh
+        - -c
+        - |
+          aws s3 cp s3://tamnara-environment/fe/nginx.conf /shared-config/nginx.conf
+          echo "Downloaded nginx.conf from S3"
+        volumeMounts:
+        - name: shared-config
+          mountPath: /shared-config
+        env:
+        - name: AWS_DEFAULT_REGION
+          value: "ap-northeast-2"
       containers:
       - name: frontend
-        image: <YOUR_ECR_REPO_URI>/frontend:latest  # ECR 이미지 URI로 변경 필요
+        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest
         ports:
         - containerPort: 80
         resources:
@@ -28,11 +43,20 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        # Nginx 설정이 있다면 ConfigMap으로 마운트 가능
-        # volumeMounts:
-        # - name: nginx-config
-        #   mountPath: /etc/nginx/conf.d
-        #   readOnly: true
+        command:
+        - sh
+        - -c
+        - |
+          cp /shared-config/nginx.conf /etc/nginx/nginx.conf
+          echo "Copied custom nginx.conf"
+          nginx -g "daemon off;"
+        volumeMounts:
+        - name: shared-config
+          mountPath: /shared-config
+          readOnly: true
+      volumes:
+      - name: shared-config
+        emptyDir: {}
       # volumes:
       # - name: nginx-config
       #   configMap:

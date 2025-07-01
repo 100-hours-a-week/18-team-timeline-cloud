@@ -18,7 +18,7 @@ spec:
         eks.amazonaws.com/nodegroup: backend-node-group  # backend 노드 그룹에 배포
       containers:
       - name: backend
-        image: <YOUR_ECR_REPO_URI>/backend:latest  # ECR 이미지 URI로 변경 필요
+        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
         ports:
         - containerPort: 8080
         env:
@@ -43,13 +43,13 @@ spec:
         # 헬스체크 설정
         livenessProbe:
           httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
+            path: /actuator/health
+            port: 9292
+          initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 5
+            path: /actuator/health
+            port: 9292
+          initialDelaySeconds: 30
           periodSeconds: 5 
