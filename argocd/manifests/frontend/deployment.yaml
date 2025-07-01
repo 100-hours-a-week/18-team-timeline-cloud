@@ -14,6 +14,7 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: default  # 기본 Service Account 명시적 지정
       nodeSelector:
         eks.amazonaws.com/nodegroup: frontend-node-group  # frontend 노드 그룹에 배포
       initContainers:
@@ -31,6 +32,10 @@ spec:
         env:
         - name: AWS_DEFAULT_REGION
           value: "ap-northeast-2"
+        - name: AWS_METADATA_SERVICE_TIMEOUT
+          value: "10"
+        - name: AWS_METADATA_SERVICE_NUM_ATTEMPTS
+          value: "3"
       containers:
       - name: frontend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest
