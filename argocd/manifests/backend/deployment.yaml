@@ -41,16 +41,15 @@ spec:
             memory: "1Gi"
             cpu: "1000m"
         # 헬스체크 설정
-                # 헬스체크 설정
         livenessProbe:
           httpGet:
-            path: /health
-            port: 8080
+            path: /actuator/health
+            port: 9292
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /health
-            port: 8080
+            path: /actuator/health
+            port: 9292
           initialDelaySeconds: 30
-          periodSeconds: 5
+          periodSeconds: 5 
