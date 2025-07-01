@@ -32,6 +32,7 @@ module "node_groups" {
     cluster_name = module.cluster.eks_cluster_name
     private_subnet_ids = each.value.subnet_ids
     default_tags = local.default_tags
+    project = var.name  # 프로젝트 이름을 S3 버킷 네이밍에 사용
 
     instance_types = each.value.instance_types
     disk_size = each.value.disk_size

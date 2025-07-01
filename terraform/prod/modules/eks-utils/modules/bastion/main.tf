@@ -131,6 +131,18 @@ resource "aws_instance" "this" {
     region = var.region
   })
 
+  # 인스턴스 안정성을 위한 lifecycle 설정
+  lifecycle {
+    # AMI 변경 시 교체 방지 (수동으로 교체 결정)
+    ignore_changes = [
+      ami,                 # AMI 자동 업데이트로 인한 교체 방지
+      user_data           # user_data 변경으로 인한 교체 방지
+    ]
+    
+    # 교체 전에 새 인스턴스 생성 (다운타임 최소화)
+    create_before_destroy = true
+  }
+
   tags = merge(var.default_tags, {
     Name = "${var.name}-bastion"
   })

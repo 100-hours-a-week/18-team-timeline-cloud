@@ -48,3 +48,8 @@ variable "ami_type" {
     type = string
     default = "AL2_x86_64"
 }
+
+variable "project" {
+    description = "Project name for S3 bucket naming"
+    type = string
+}

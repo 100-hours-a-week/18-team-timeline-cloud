@@ -29,6 +29,43 @@ resource "aws_iam_role_policy_attachment" "node_policy_attachment" {
   policy_arn = each.value
 }
 
+# 커스텀 S3 접근 정책 (환경설정 파일용)
+resource "aws_iam_policy" "s3_env_access" {
+  name        = "${var.name}-s3-env-access"
+  description = "Allow EKS nodes to access environment files from S3"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.project}-environment/*"  # 실제 환경설정 파일 버킷
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.project}-environment"
+        ]
+      }
+    ]
+  })
+
+  tags = var.default_tags
+}
+
+resource "aws_iam_role_policy_attachment" "s3_env_access" {
+  role       = aws_iam_role.this.name
+  policy_arn = aws_iam_policy.s3_env_access.arn
+}
+
 ###############################################
 ####              Node Group               ####
 ###############################################
