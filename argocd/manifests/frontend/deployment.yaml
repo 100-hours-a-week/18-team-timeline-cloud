@@ -43,10 +43,16 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        command:
+        - sh
+        - -c
+        - |
+          cp /shared-config/nginx.conf /etc/nginx/nginx.conf
+          echo "Copied custom nginx.conf"
+          nginx -g "daemon off;"
         volumeMounts:
         - name: shared-config
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
+          mountPath: /shared-config
           readOnly: true
       volumes:
       - name: shared-config
