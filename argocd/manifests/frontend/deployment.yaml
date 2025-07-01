@@ -14,6 +14,7 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: frontend-service-account  # IRSA로 만든 Service Account 사용
       nodeSelector:
         eks.amazonaws.com/nodegroup: frontend-node-group  # frontend 노드 그룹에 배포
       initContainers:
