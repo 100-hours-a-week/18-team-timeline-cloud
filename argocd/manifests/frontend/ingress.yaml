@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    # ALB Ingress Controller 사용
+    kubernetes.io/ingress.class: alb
+    
+    # ALB 설정
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    
+    # SSL/HTTPS 설정
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:346011888304:certificate/30f0927f-0fb0-4e93-b79e-ef89afd9f2ff
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    
+    # External DNS
+    external-dns.alpha.kubernetes.io/hostname: tam-nara.com
+    
+    # ALB 태그
+    alb.ingress.kubernetes.io/tags: Environment=prod,Project=tamnara
+
+spec:
+  rules:
+  - host: tam-nara.com
+    http:
+      paths:
+      - path: /api/
+        pathType: Prefix
+        backend:
+          service:
+            name: tamnara-backend-service
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80 
