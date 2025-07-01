@@ -14,7 +14,6 @@ spec:
       labels:
         app: frontend
     spec:
-      serviceAccountName: default  # 기본 Service Account 명시적 지정
       nodeSelector:
         eks.amazonaws.com/nodegroup: frontend-node-group  # frontend 노드 그룹에 배포
       initContainers:
