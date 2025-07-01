@@ -13,7 +13,7 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     
     # ACM 인증서 ARN (실제 인증서 ARN으로 변경 필요)
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:YOUR_ACCOUNT_ID:certificate/YOUR_CERTIFICATE_ID
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:346011888304:certificate/30f0927f-0fb0-4e93-b79e-ef89afd9f2ff
     
     # External-DNS annotation
     external-dns.alpha.kubernetes.io/hostname: tam-nara.com
