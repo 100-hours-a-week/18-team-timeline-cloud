@@ -15,7 +15,7 @@ spec:
         app: backend
     spec:
       nodeSelector:
-        eks.amazonaws.com/nodegroup: backend-node-group  # backend 노드 그룹에 배포
+        eks.amazonaws.com/nodegroup: backend-node-group 
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -35,17 +35,17 @@ spec:
         #       key: db-host
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "200m"
-          limits:
             memory: "1Gi"
-            cpu: "1000m"
+            cpu: "768m"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1500m"
         # 헬스체크 설정
         livenessProbe:
           httpGet:
             path: /health
             port: 8080
-          initialDelaySeconds: 90
+          initialDelaySeconds: 180
           periodSeconds: 10
         readinessProbe:
           httpGet:
