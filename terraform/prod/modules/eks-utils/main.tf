@@ -121,4 +121,14 @@ module "argocd" {
   applications_path = var.applications_path
   
   depends_on = [module.aws_auth, module.alb_controller, module.external_dns]
+}
+
+module "backend_irsa" {
+  source = "./modules/backend-irsa"
+
+  project           = var.project
+  environment       = var.environment
+  oidc_provider     = local.oidc_provider
+  oidc_provider_arn = local.oidc_provider_arn
+  k8s_namespace     = var.k8s_namespace
 } 
