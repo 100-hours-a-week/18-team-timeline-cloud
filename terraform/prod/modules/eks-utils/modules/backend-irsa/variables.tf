@@ -1,11 +1,6 @@
-variable "project" {
+variable "name" {
   type        = string
-  description = "Project name"
-}
-
-variable "environment" {
-  type        = string
-  description = "Environment name"
+  description = "Name prefix for all resources"
 }
 
 variable "oidc_provider" {
@@ -22,4 +17,10 @@ variable "k8s_namespace" {
   type        = string
   description = "Kubernetes namespace"
   default     = "default"
+}
+
+variable "default_tags" {
+  description = "Default tags to apply to all resources"
+  type        = map(string)
+  default     = {}
 } 

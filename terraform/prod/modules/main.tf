@@ -106,7 +106,9 @@ module "eks_utils" {
     helm = helm
   }
 
-  # 기본 클러스터 설정
+  # 기본 설정
+  project             = var.project
+  environment         = var.environment
   name                = var.project
   region              = "ap-northeast-2"
   vpc_id              = var.vpc_id

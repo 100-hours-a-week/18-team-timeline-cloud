@@ -8,7 +8,7 @@ terraform {
 }
 
 resource "aws_iam_role" "backend_role" {
-  name = "${var.project}-${var.environment}-backend-role"
+  name = "${var.name}-backend-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -29,10 +29,7 @@ resource "aws_iam_role" "backend_role" {
     ]
   })
 
-  tags = {
-    Environment = var.environment
-    Project     = var.project
-  }
+  tags = var.default_tags
 }
 
 resource "kubernetes_service_account" "backend" {
@@ -41,6 +38,9 @@ resource "kubernetes_service_account" "backend" {
     namespace = var.k8s_namespace
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.backend_role.arn
+    }
+    labels = {
+      "app.kubernetes.io/managed-by" = "terraform"
     }
   }
 }

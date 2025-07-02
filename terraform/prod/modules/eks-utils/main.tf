@@ -126,9 +126,22 @@ module "argocd" {
 module "backend_irsa" {
   source = "./modules/backend-irsa"
 
-  project           = var.project
-  environment       = var.environment
+  name              = var.name
   oidc_provider     = local.oidc_provider
   oidc_provider_arn = local.oidc_provider_arn
   k8s_namespace     = var.k8s_namespace
+  default_tags      = var.default_tags
+}
+
+data "aws_eks_cluster" "this" {
+  name = "${var.project}-${var.environment}-cluster"
+}
+
+data "aws_iam_openid_connect_provider" "this" {
+  url = data.aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+locals {
+  oidc_provider     = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
+  oidc_provider_arn = data.aws_iam_openid_connect_provider.this.arn
 } 

@@ -1,5 +1,6 @@
 variable "name" {
-  type = string
+  type        = string
+  description = "Name prefix for all resources"
 }
 
 variable "vpc_id" {
@@ -134,4 +135,20 @@ variable "frontend_s3_bucket_name" {
   description = "S3 bucket name for frontend environment files"
   type = string
   default = "tamnara-environment"
+}
+
+variable "k8s_namespace" {
+  type        = string
+  description = "Kubernetes namespace"
+  default     = "default"
+}
+
+variable "project" {
+  type        = string
+  description = "Project name"
+}
+
+variable "environment" {
+  type        = string
+  description = "Environment name"
 } 
