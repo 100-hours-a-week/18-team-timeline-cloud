@@ -18,23 +18,23 @@ spec:
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group 
       initContainers:
-      - name: env-downloader
-        image: amazon/aws-cli:latest
+      - name: env-loader
+        image: amazon/aws-cli:2.13.25
         command:
         - sh
         - -c
         - |
-          aws s3 cp s3://tamnara-environment/be/.env /shared-config/.env
-          echo "Downloaded .env from S3"
+          aws s3 cp s3://your-bucket/backend/.env /config/env
         volumeMounts:
-        - name: shared-config
-          mountPath: /shared-config
-        env:
-        - name: AWS_DEFAULT_REGION
-          value: "ap-northeast-2"
+        - name: config
+          mountPath: /config
       containers:
       - name: backend
-        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
+        image: your-backend-image
+        env: []  # 기존 환경변수 모두 제거
+        envFrom:  # .env 파일의 내용만 환경변수로 사용
+        - configMapRef:
+            name: backend-env
         ports:
         - containerPort: 8080
         env:
@@ -46,21 +46,6 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
-        command:
-        - sh
-        - -c
-        - |
-          # .env 파일에서 따옴표 제거하고 환경변수 export
-          if [ -f /shared-config/.env ]; then
-            echo "Loading .env file..."
-            export $(cat /shared-config/.env | sed 's/"//g' | grep -v '^#' | xargs)
-            echo "Environment variables loaded from .env"
-            env | grep -E "DB_|REDIS_HOST|KAKAO_" | head -5
-          fi
-          exec java -jar /app.jar
-        envFrom:
-        - secretRef:
-            name: backend-secrets
         volumeMounts:
         - name: shared-config
           mountPath: /shared-config
