@@ -53,37 +53,38 @@ module "shared" {
 }
 
 # dev 환경 전체
-module "dev" {
-  source = "./dev/modules"
+# Dev 모듈 (나중에 사용할 예정이므로 현재는 주석처리)
+# module "dev" {
+#   source = "./dev/modules"
 
-  # VPC 및 네트워크
-  vpc_id = module.shared.vpc_id
-  vpc_cidr_block = module.shared.vpc_cidr
+#   # VPC 및 네트워크
+#   vpc_id = module.shared.vpc_id
+#   vpc_cidr_block = module.shared.vpc_cidr
   
-  public_subnet_a_id = module.shared.public_subnet_a_id
-  private_subnet_a_front_id = module.shared.private_subnet_a_front_id
-  private_subnet_a_back_id  = module.shared.private_subnet_a_back_id
-  private_subnet_a_db_id    = module.shared.private_subnet_a_db_id
+#   public_subnet_a_id = module.shared.public_subnet_a_id
+#   private_subnet_a_front_id = module.shared.private_subnet_a_front_id
+#   private_subnet_a_back_id  = module.shared.private_subnet_a_back_id
+#   private_subnet_a_db_id    = module.shared.private_subnet_a_db_id
 
-  # EC2 설정
-  ami_id           = var.ami_id
-  instance_type    = var.instance_type
-  instance_type_be = var.instance_type_be
-  key_pair_name    = var.key_pair_name
+#   # EC2 설정
+#   ami_id           = var.ami_id
+#   instance_type    = var.instance_type
+#   instance_type_be = var.instance_type_be
+#   key_pair_name    = var.key_pair_name
 
-  # Private IP 설정
-  front_private_ip = var.front_private_ip
-  backend_private_ip = var.backend_private_ip
-  db_private_ip = var.db_private_ip
+#   # Private IP 설정
+#   front_private_ip = var.front_private_ip
+#   backend_private_ip = var.backend_private_ip
+#   db_private_ip = var.db_private_ip
 
-  # Route53 설정
-  dns_zone_id = var.dns_zone_id
-  domain_name = var.domain_name
+#   # Route53 설정
+#   dns_zone_id = var.dns_zone_id
+#   domain_name = var.domain_name
 
-  # 공통 설정
-  project     = var.project
-  environment = var.environment
-}
+#   # 공통 설정
+#   project     = var.project
+#   environment = var.environment
+# }
 
 # prod 환경 전체
 module "prod" {
