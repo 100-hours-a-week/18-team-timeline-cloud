@@ -17,6 +17,11 @@ variable "backend_sg_id" {
   type = string
 }
 
+variable "eks_cluster_sg_id" {
+  description = "EKS 클러스터 보안그룹 ID (Pod들이 RDS 접속할 수 있도록)"
+  type        = string
+}
+
 variable "db_name" {
   type = string
 }

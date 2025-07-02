@@ -16,7 +16,14 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [var.backend_sg_id] # 백엔드 SG로부터만 허용
+    security_groups = [var.backend_sg_id] # 백엔드 SG로부터 허용
+  }
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [var.eks_cluster_sg_id] # EKS 클러스터 SG로부터 허용 (ArgoCD Pod들)
   }
 
   egress {

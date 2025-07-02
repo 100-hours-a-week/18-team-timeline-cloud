@@ -159,6 +159,7 @@ module "rds" {
   private_subnet_c_db_id = var.private_subnet_c_db_id
 
   backend_sg_id        = module.sg.backend_sg_id
+  eks_cluster_sg_id    = module.eks.cluster_security_group_id
 
   db_name              = var.db_name
   db_username          = var.db_username
