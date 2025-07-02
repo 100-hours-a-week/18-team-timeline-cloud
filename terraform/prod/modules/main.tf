@@ -107,9 +107,9 @@ module "eks_utils" {
   }
 
   # 기본 설정
+  name                = var.project
   project             = var.project
   environment         = var.environment
-  name                = var.project
   region              = "ap-northeast-2"
   vpc_id              = var.vpc_id
   vpc_cidr            = var.vpc_cidr_block

@@ -232,6 +232,6 @@ resource "aws_iam_role_policy_attachment" "ecs_instance_policy" {
 
 # EC2 Instance Profile
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "ec2-instance-profile-for-ecr"
+  name = "${var.project}-ec2-instance-profile-for-ecr"
   role = aws_iam_role.ec2_instance_role.name
 }
