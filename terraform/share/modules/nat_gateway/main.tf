@@ -3,7 +3,7 @@ resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = {
-    Name = "docker-v1-nat-eip"
+    Name = "${var.project}-${var.environment}-nat-eip"
   }
 }
 
@@ -13,7 +13,7 @@ resource "aws_nat_gateway" "this" {
   subnet_id     = var.public_subnet_a_id
 
   tags = {
-    Name = "docker-v1-natgw"
+    Name = "${var.project}-${var.environment}-natgw"
   }
 
   depends_on = [aws_eip.nat]
@@ -29,7 +29,7 @@ resource "aws_nat_gateway" "this" {
 #   }
 
 #   tags = {
-#     Name = "docker-v1-privateRT"
+#     Name = "${var.project}-${var.environment}-privateRT"
 #   }
 # }
 
@@ -38,7 +38,7 @@ resource "aws_route_table" "private" {
   vpc_id = var.vpc_id
 
   tags = {
-    Name = "docker-v1-privateRT"
+    Name = "${var.project}-${var.environment}-privateRT"
   }
 }
 
@@ -59,7 +59,7 @@ resource "aws_route_table" "private_db" {
   vpc_id = var.vpc_id
 
   tags = {
-    Name = "docker-v1-privateRT-db"
+    Name = "${var.project}-${var.environment}-privateRT-db"
   }
 }
 

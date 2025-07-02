@@ -6,7 +6,7 @@ resource "aws_subnet" "public_a" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-subnet-a"
+    Name = "${var.project}-${var.environment}-public-subnet-a"
   }
 }
 
@@ -18,7 +18,7 @@ resource "aws_subnet" "public_c" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-subnet-c"
+    Name = "${var.project}-${var.environment}-public-subnet-c"
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_subnet" "private_a_front" {
   availability_zone = var.az_a
 
   tags = {
-    Name = "private-subnet-a-front"
+    Name = "${var.project}-${var.environment}-private-subnet-a-front"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "private_c_front" {
   availability_zone = var.az_c
 
   tags = {
-    Name = "private-subnet-c-front"
+    Name = "${var.project}-${var.environment}-private-subnet-c-front"
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_subnet" "private_a_back" {
   availability_zone = var.az_a
 
   tags = {
-    Name = "private-subnet-a-back"
+    Name = "${var.project}-${var.environment}-private-subnet-a-back"
   }
 }
 
@@ -63,7 +63,7 @@ resource "aws_subnet" "private_c_back" {
   availability_zone = var.az_c
 
   tags = {
-    Name = "private-subnet-c-back"
+    Name = "${var.project}-${var.environment}-private-subnet-c-back"
   }
 }
 
@@ -74,7 +74,7 @@ resource "aws_subnet" "private_a_db" {
   availability_zone = var.az_a
 
   tags = {
-    Name = "private-subnet-a-db"
+    Name = "${var.project}-${var.environment}-private-subnet-a-db"
   }
 }
 
@@ -85,6 +85,6 @@ resource "aws_subnet" "private_c_db" {
   availability_zone = var.az_c
 
   tags = {
-    Name = "private-subnet-c-db"
+    Name = "${var.project}-${var.environment}-private-subnet-c-db"
   }
 }

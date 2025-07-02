@@ -2,6 +2,10 @@ resource "aws_vpc_peering_connection" "this" {
     vpc_id = var.requester_vpc_id
     peer_vpc_id = var.accepter_vpc_id
     auto_accept = false
+
+    tags = {
+        Name = "${var.project}-${var.environment}-vpc-peering"
+    }
 }
 
 resource "aws_route" "requester_to_accepter" {

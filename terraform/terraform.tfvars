@@ -34,8 +34,8 @@ ami_id = "ami-08943a151bd468f4e" # 서울 리전의 최신 Ubuntu AMI amd
 
 
 # 공통 정보
-project     = "tamnara-eks"
-environment = "prod"
+project     = "tamnara"
+environment = "eks"
 
 
 # ALB 설정

@@ -4,6 +4,16 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "project" {
+  description = "프로젝트 이름"
+  type        = string
+}
+
+variable "environment" {
+  description = "환경 (예: dev, prod)"
+  type        = string
+}
+
 # 가용 영역
 variable "az_a" {
   description = "가용 영역 A (예: ap-northeast-2a)"

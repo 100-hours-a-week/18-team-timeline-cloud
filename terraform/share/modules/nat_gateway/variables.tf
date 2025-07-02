@@ -3,6 +3,16 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "project" {
+  description = "프로젝트 이름"
+  type        = string
+}
+
+variable "environment" {
+  description = "환경 (예: dev, prod)"
+  type        = string
+}
+
 variable "public_subnet_a_id" {
   description = "NAT Gateway가 위치할 퍼블릭 서브넷 A ID"
   type        = string

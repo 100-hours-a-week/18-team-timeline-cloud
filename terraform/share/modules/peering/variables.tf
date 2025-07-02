@@ -1,6 +1,16 @@
 # accepter vpc가 모듈에서 생성된 vpc_id
 # requester vpc는 사용자한테 입력받는 vpc_id
 
+variable "project" {
+  description = "프로젝트 이름"
+  type        = string
+}
+
+variable "environment" {
+  description = "환경 (예: dev, prod)"
+  type        = string
+}
+
 variable "requester_vpc_id" {
   description = "요청자 VPC의 ID"
   type        = string

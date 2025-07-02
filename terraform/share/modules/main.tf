@@ -12,6 +12,8 @@ module "subnet" {
   source = "./subnet"
 
   vpc_id = module.vpc.vpc_id
+  project = var.project
+  environment = var.environment
   az_a   = var.az_a
   az_c   = var.az_c
 
@@ -44,6 +46,8 @@ module "nat_gateway" {
   source = "./nat_gateway"
 
   vpc_id             = module.vpc.vpc_id
+  project            = var.project
+  environment        = var.environment
   public_subnet_a_id = module.subnet.public_subnet_a_id
 
   private_subnet_a_front_id = module.subnet.private_subnet_a_front_id
@@ -67,6 +71,8 @@ data "aws_route_tables" "shared" {
 module "vpc_peering" {
   source = "./peering"
   
+  project = var.project
+  environment = var.environment
   requester_vpc_id = var.peering_vpc_id
   accepter_vpc_id  = module.vpc.vpc_id
   
