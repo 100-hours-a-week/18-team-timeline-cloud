@@ -62,6 +62,18 @@ variable "domain_filters" {
   default = []
 }
 
+variable "enable_ebs_csi_driver" {
+  description = "Enable AWS EBS CSI Driver (필수: EBS 볼륨 사용을 위해 필요)"
+  type = bool
+  default = true
+}
+
+variable "enable_secrets" {
+  description = "Enable Parameter Store to Kubernetes Secret conversion"
+  type        = bool
+  default     = true
+}
+
 variable "enable_argocd" {
   description = "Enable ArgoCD"
   type = bool

@@ -1,10 +1,16 @@
 terraform {
   required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
     kubernetes = {
-      source = "hashicorp/kubernetes"
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
     }
     helm = {
-      source = "hashicorp/helm"
+      source  = "hashicorp/helm"
+      version = "~> 3.0"
     }
   }
 }
@@ -112,6 +118,21 @@ module "irsa" {
   depends_on = [module.aws_auth]
 }
 
+# EBS CSI Driver (Redis PVC 문제 해결을 위한 필수 addon)
+module "ebs_csi_driver" {
+  source = "./modules/ebs-csi-driver"
+  
+  count = var.enable_ebs_csi_driver ? 1 : 0
+
+  name                = var.name
+  cluster_name        = var.cluster_name
+  cluster_oidc_issuer = var.cluster_oidc_issuer
+  region              = var.region
+  default_tags        = var.default_tags
+  
+  depends_on = [module.aws_auth]
+}
+
 # ArgoCD
 module "argocd" {
   source = "./modules/argocd"
@@ -129,11 +150,30 @@ module "argocd" {
   target_revision = var.target_revision
   applications_path = var.applications_path
   
-  depends_on = [module.aws_auth, module.alb_controller, module.external_dns]
+  depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver]
 }
 
-# Backend IRSA는 위의 통합 IRSA 모듈에서 처리됨
+# ============================================================================
+# Secrets (Parameter Store → Kubernetes Secret)
+# ============================================================================
+module "secrets" {
+  source = "./modules/secrets"
+  
+  count = var.enable_secrets ? 1 : 0
+  
+  providers = {
+    aws        = aws
+    kubernetes = kubernetes
+  }
+  
+  namespace = module.irsa.app_namespace
+  
+  depends_on = [module.aws_auth]
+}
 
+# ============================================================================
+# Data Sources
+# ============================================================================
 data "aws_eks_cluster" "this" {
   name = var.cluster_name
 }

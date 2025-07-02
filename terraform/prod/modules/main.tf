@@ -1,3 +1,20 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 3.0"
+    }
+  }
+}
+
 # Security Groups
 module "sg" {
   source = "./sg"
@@ -102,8 +119,9 @@ module "eks_utils" {
   
   # Provider 설정
   providers = {
+    aws        = aws
     kubernetes = kubernetes
-    helm = helm
+    helm       = helm
   }
 
   # 기본 설정
@@ -125,6 +143,12 @@ module "eks_utils" {
 
   # ALB Controller 설정 (Ingress 처리)
   enable_alb_controller   = true
+
+  # EBS CSI Driver 설정 (Redis PVC 문제 해결)
+  enable_ebs_csi_driver   = true
+
+  # Secrets 설정 (Parameter Store → Kubernetes Secret)
+  enable_secrets = true
 
   # External-DNS 설정 
   enable_external_dns     = var.enable_external_dns     # tam-nara.com 도메인 자동 관리

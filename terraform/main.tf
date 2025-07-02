@@ -4,6 +4,13 @@ provider "aws" {
 }
 
 terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+  
   backend "s3" {
     bucket         = "ktb18-terraform-state-bucket"
     key            = "eks/s3/terraform.tfstate"
@@ -15,6 +22,10 @@ terraform {
 # 공유 리소스 - VPC / Subnet / NAT Gateway / Peering
 module "shared" {
   source = "./share/modules"
+  
+  providers = {
+    aws = aws
+  }
 
   # VPC 설정
   vpc_cidr = var.vpc_cidr_block
@@ -89,6 +100,10 @@ module "shared" {
 # prod 환경 전체
 module "prod" {
   source = "./prod/modules"
+  
+  providers = {
+    aws = aws
+  }
 
   # VPC 및 네트워크
   vpc_id = module.shared.vpc_id
