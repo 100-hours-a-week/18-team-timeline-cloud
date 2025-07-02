@@ -47,7 +47,10 @@ resource "aws_iam_policy" "external_dns" {
     ]
   })
 
-  tags = var.default_tags
+  tags = merge(var.default_tags, {
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "kubernetes.io/managed-by"                  = "terraform"
+  })
 }
 
 # External-DNS IAM Role 생성 (IRSA)
@@ -71,7 +74,10 @@ resource "aws_iam_role" "external_dns" {
     }]
   })
 
-  tags = var.default_tags
+  tags = merge(var.default_tags, {
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "kubernetes.io/managed-by"                  = "terraform"
+  })
 }
 
 # Policy를 Role에 연결
@@ -90,6 +96,10 @@ resource "kubernetes_service_account" "external_dns" {
     namespace = "kube-system"
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns.arn
+    }
+    labels = {
+      "app.kubernetes.io/name"       = "external-dns"
+      "app.kubernetes.io/managed-by" = "terraform"
     }
   }
 }
@@ -112,12 +122,13 @@ resource "helm_release" "external_dns" {
       aws = {
         region = var.region
         zoneType = "public"
+        preferCNAME = true
       }
       domainFilters = var.domain_filters
-      policy = "sync"  # upsert-only도 가능
+      policy = "sync"
       registry = "txt"
       txtOwnerId = var.cluster_name
-      txtPrefix = "external-dns-"
+      txtPrefix = "external-dns-${var.cluster_name}-"
       sources = [
         "service",
         "ingress"
@@ -127,6 +138,22 @@ resource "helm_release" "external_dns" {
       }
       securityContext = {
         fsGroup = 65534
+      }
+      metrics = {
+        enabled = true
+        serviceMonitor = {
+          enabled = true
+        }
+      }
+      extraArgs = [
+        "--txt-wildcard-replacement=*"
+      ]
+      podAnnotations = {
+        "cluster-autoscaler.kubernetes.io/safe-to-evict" = "true"
+      }
+      podLabels = {
+        "app.kubernetes.io/name"       = "external-dns"
+        "app.kubernetes.io/managed-by" = "terraform"
       }
     })
   ]

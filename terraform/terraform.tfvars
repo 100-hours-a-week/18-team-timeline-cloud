@@ -1,25 +1,25 @@
 # VPC 설정
-vpc_cidr_block = "10.0.0.0/16"
+vpc_cidr_block = "172.16.0.0/16"  # 기존 VPC와 다른 CIDR 블록 사용
 
 # 가용 영역
 az_a = "ap-northeast-2a"
 az_c = "ap-northeast-2c"
 
 # 서브넷 설정
-public_subnet_a_cidr  = "10.0.0.0/24"
-public_subnet_c_cidr  = "10.0.1.0/24"
+public_subnet_a_cidr  = "172.16.0.0/24"
+public_subnet_c_cidr  = "172.16.1.0/24"
 
 // 프론트 서브넷 CIDR
-private_subnet_a_front_cidr = "10.0.10.0/24"
-private_subnet_c_front_cidr = "10.0.11.0/24"
+private_subnet_a_front_cidr = "172.16.10.0/24"
+private_subnet_c_front_cidr = "172.16.11.0/24"
 
 // 백엔드 서브넷 CIDR
-private_subnet_a_back_cidr = "10.0.20.0/24"
-private_subnet_c_back_cidr = "10.0.21.0/24"
+private_subnet_a_back_cidr = "172.16.20.0/24"
+private_subnet_c_back_cidr = "172.16.21.0/24"
 
 # DB 서브넷 CIDR
-private_subnet_a_db_cidr = "10.0.30.0/24"
-private_subnet_c_db_cidr = "10.0.31.0/24"
+private_subnet_a_db_cidr = "172.16.30.0/24"
+private_subnet_c_db_cidr = "172.16.31.0/24"
 
 # EC2 공통 설정
 instance_type = "t3.micro"
@@ -37,7 +37,7 @@ environment = "prod"
 alb_idle_timeout = 300
 
 # # 태그 공통
-# project = "3tier-web-app"
+# project = "eks"
 # environment = "production"
 
 # RDS 정보
@@ -46,7 +46,7 @@ db_username          = "temnara18spring"
 db_password          = "temnara1818!"
 db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
-db_snapshot_identifier = "prod-rds-0618"  # 기존 스냅샷 사용. 새 DB 생성시 null 또는 주석처리
+db_snapshot_identifier = "prod-rds-0626"  # 기존 스냅샷 사용. 새 DB 생성시 null 또는 주석처리
 
 key_pair_name = "mvp-key-v1"
 

@@ -107,7 +107,7 @@ module "prod" {
   db_snapshot_identifier = var.db_snapshot_identifier
 
   # OpenVPN 설정
-  openvpn_eip_allocation_id = "eipalloc-049804da24b652d0b"
+  openvpn_eip_allocation_id = "eipalloc-0e9e723386c25bdad"
 
   # ArgoCD 설정
   enable_argocd        = var.enable_argocd

@@ -1,13 +1,13 @@
 # ─────────────────────────────────────────────────────
 # Frontend EC2 Instances
 # ─────────────────────────────────────────────────────
-resource "aws_instance" "frontend_a" {
+resource "aws_instance" "frontend" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   subnet_id              = var.private_subnet_a_front_id
+  private_ip             = var.front_private_ip
   vpc_security_group_ids = [var.sg_frontend_id]
   key_name               = var.key_pair_name
-  private_ip             = "10.0.10.5" # 프라이빗 Ip 고정
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
   user_data              = local.ec2_user_data_frontend
   tags = {
@@ -21,13 +21,13 @@ resource "aws_instance" "frontend_a" {
 # ─────────────────────────────────────────────────────
 # Backend EC2 Instances
 # ─────────────────────────────────────────────────────
-resource "aws_instance" "backend_a" {
+resource "aws_instance" "backend" {
   ami                    = var.ami_id
   instance_type          = var.instance_type_be
   subnet_id              = var.private_subnet_a_back_id
+  private_ip             = var.backend_private_ip
   vpc_security_group_ids = [var.sg_backend_id]
   key_name               = var.key_pair_name
-  private_ip             = "10.0.20.5"   #프라이빗 Ip 고정
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
   user_data              = local.ec2_user_data_backend
 
@@ -101,13 +101,13 @@ locals {
 # MySQL EC2 Instance (mySQL 서버)
 # ─────────────────────────────────────────────────────
 
-resource "aws_instance" "mysql" {
-  ami                    = "ami-047fbf2e7070b91b4"
-  instance_type          = "t3.micro"
+resource "aws_instance" "db" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
   subnet_id              = var.private_subnet_a_db_id
+  private_ip             = var.db_private_ip
   vpc_security_group_ids = [var.sg_db_id]
   key_name               = var.key_pair_name
-  private_ip             = "10.0.30.5" # 프라이빗 IP 고정
 
   user_data = <<-EOF
 #!/bin/bash
@@ -157,7 +157,7 @@ resource "aws_instance" "reverse_proxy" {
                   server_name dev.tam-nara.com;
 
                   location / {
-                      proxy_pass http://${aws_instance.frontend_a.private_ip}:3000;
+                      proxy_pass http://${aws_instance.frontend.private_ip}:3000;
                       proxy_set_header Host \$host;
                       proxy_set_header X-Real-IP \$remote_addr;
                       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -170,7 +170,7 @@ resource "aws_instance" "reverse_proxy" {
                   server_name dev.api.tam-nara.com;
 
                   location / {
-                      proxy_pass http://${aws_instance.backend_a.private_ip}:8080;
+                      proxy_pass http://${aws_instance.backend.private_ip}:8080;
                       proxy_set_header Host \$host;
                       proxy_set_header X-Real-IP \$remote_addr;
                       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;

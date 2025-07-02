@@ -1,20 +1,30 @@
 resource "aws_security_group" "frontend" {
-  name        = "docker-v1-sg-frontend"
-  description = "Allow EKS frontend node group traffic"
+  name        = "${var.project}-${var.environment}-frontend-sg"
+  description = "Security group for frontend instances"
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    description = "Allow internal VPC traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   ingress {
+    description = "Allow HTTP from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  ingress {
+    description = "Allow HTTPS from VPC"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   ingress {
@@ -35,15 +45,24 @@ resource "aws_security_group" "frontend" {
 }
 
 resource "aws_security_group" "backend" {
-  name        = "docker-v1-sg-backend"
-  description = "Allow EKS backend node group traffic"
+  name        = "${var.project}-${var.environment}-backend-sg"
+  description = "Security group for backend instances"
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    description = "Allow internal traffic from VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  ingress {
+    description = "Allow HTTP from VPC"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   ingress {

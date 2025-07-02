@@ -44,33 +44,30 @@ resource "aws_iam_role_policy_attachment" "cluster_policy_attachment"{
 ####            Security Group             ####
 ###############################################
 
-resource "aws_security_group" "this" {
-  name        = "${var.name}-eks-cluster-sg"
-  description = "EKS Cluster security group"
+resource "aws_security_group" "cluster" {
+  name        = "${var.project}-${var.environment}-cluster-sg"
+  description = "EKS cluster security group"
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-  ingress {
-    from_port   = 10250
-    to_port     = 10250
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-  egress {
+    description = "Allow internal VPC traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
-  tags = var.default_tags
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  tags = {
+    Name = "${var.project}-${var.environment}-cluster-sg"
+  }
 }
 
 ###############################################
@@ -84,7 +81,7 @@ resource "aws_eks_cluster" "this" {
     enabled_cluster_log_types = var.cluster_enabled_log_types
 
     vpc_config {
-        security_group_ids = [aws_security_group.this.id]
+        security_group_ids = [aws_security_group.cluster.id]
         subnet_ids = var.private_subnet_ids
         endpoint_private_access = true
         endpoint_public_access = true

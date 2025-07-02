@@ -5,7 +5,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "docker-v1-vpc"
+    Name = "${var.project}-${var.environment}-vpc"
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "docker-v1-igw"
+    Name = "${var.project}-${var.environment}-igw"
   }
 }
 
@@ -28,6 +28,6 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "docker-v1-publicRT"
+    Name = "${var.project}-${var.environment}-publicRT"
   }
 }
