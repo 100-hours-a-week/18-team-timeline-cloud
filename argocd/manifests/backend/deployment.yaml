@@ -50,9 +50,13 @@ spec:
         - sh
         - -c
         - |
-          set -o allexport
-          source /shared-config/.env
-          set +o allexport
+          # .env 파일에서 따옴표 제거하고 환경변수 export
+          if [ -f /shared-config/.env ]; then
+            echo "Loading .env file..."
+            export $(cat /shared-config/.env | sed 's/"//g' | grep -v '^#' | xargs)
+            echo "Environment variables loaded from .env"
+            env | grep -E "DB_|REDIS_HOST|KAKAO_" | head -5
+          fi
           exec java -jar /app.jar
         envFrom:
         - secretRef:
