@@ -30,7 +30,7 @@ spec:
           mountPath: /config
       containers:
       - name: backend
-        image: your-backend-image
+        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
         env: []  # 기존 환경변수 모두 제거
         envFrom:  # .env 파일의 내용만 환경변수로 사용
         - configMapRef:
