@@ -41,13 +41,28 @@ output "external_dns_service_account_name" {
   value       = var.enable_external_dns ? module.external_dns[0].external_dns_service_account_name : null
 }
 
-# Frontend IRSA Outputs
+# IRSA Outputs (Frontend + Backend)
+output "app_namespace" {
+  description = "Application namespace name"
+  value       = module.irsa.app_namespace
+}
+
 output "frontend_irsa_role_arn" {
   description = "IAM Role ARN for Frontend IRSA"
-  value       = var.enable_frontend_irsa ? module.frontend_irsa[0].iam_role_arn : null
+  value       = module.irsa.frontend_irsa_role_arn
 }
 
 output "frontend_service_account_name" {
   description = "Service Account name for Frontend"
-  value       = var.enable_frontend_irsa ? module.frontend_irsa[0].service_account_name : null
+  value       = module.irsa.frontend_service_account_name
+}
+
+output "backend_irsa_role_arn" {
+  description = "IAM Role ARN for Backend IRSA"
+  value       = module.irsa.backend_irsa_role_arn
+}
+
+output "backend_service_account_name" {
+  description = "Service Account name for Backend"
+  value       = module.irsa.backend_service_account_name
 } 

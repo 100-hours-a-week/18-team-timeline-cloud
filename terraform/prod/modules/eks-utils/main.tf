@@ -83,22 +83,31 @@ module "external_dns" {
   depends_on = [module.aws_auth, module.alb_controller]
 }
 
-# Frontend IRSA
-module "frontend_irsa" {
-  source = "./modules/frontend-irsa"
-  
-  count = var.enable_frontend_irsa ? 1 : 0
+# Unified IRSA (Frontend + Backend + Namespace)
+module "irsa" {
+  source = "./modules/irsa"
   
   providers = {
     kubernetes = kubernetes
   }
 
-  name = var.name
+  name                = var.name
   cluster_oidc_issuer = var.cluster_oidc_issuer
-  namespace = var.frontend_namespace
-  service_account_name = var.frontend_service_account_name
-  s3_bucket_name = var.frontend_s3_bucket_name
-  default_tags = var.default_tags
+  default_tags        = var.default_tags
+  
+  # Namespace settings
+  create_namespace = true
+  app_namespace    = var.frontend_namespace
+  backend_namespace = var.k8s_namespace
+  
+  # Frontend IRSA settings
+  enable_frontend_irsa           = var.enable_frontend_irsa
+  frontend_service_account_name  = var.frontend_service_account_name
+  frontend_s3_bucket_name        = var.frontend_s3_bucket_name
+  
+  # Backend IRSA settings  
+  enable_backend_irsa           = true
+  backend_service_account_name  = "backend-service-account"
   
   depends_on = [module.aws_auth]
 }
@@ -123,18 +132,10 @@ module "argocd" {
   depends_on = [module.aws_auth, module.alb_controller, module.external_dns]
 }
 
-module "backend_irsa" {
-  source = "./modules/backend-irsa"
-
-  name              = var.name
-  oidc_provider     = local.oidc_provider
-  oidc_provider_arn = local.oidc_provider_arn
-  k8s_namespace     = var.k8s_namespace
-  default_tags      = var.default_tags
-}
+# Backend IRSA는 위의 통합 IRSA 모듈에서 처리됨
 
 data "aws_eks_cluster" "this" {
-  name = "${var.project}-${var.environment}-cluster"
+  name = var.cluster_name
 }
 
 data "aws_iam_openid_connect_provider" "this" {
