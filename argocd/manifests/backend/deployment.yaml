@@ -17,6 +17,27 @@ spec:
       serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group 
+      initContainers:
+      - name: env-downloader
+        image: amazon/aws-cli:latest
+        command:
+        - sh
+        - -c
+        - |
+          aws s3 cp s3://tamnara-environment/be/.env /shared-config/.env
+          echo "Downloaded .env from S3"
+          # .env 파일을 Spring Boot properties 형식으로 복사
+          cp /shared-config/.env /shared-config/application.properties
+        volumeMounts:
+        - name: shared-config
+          mountPath: /shared-config
+        env:
+        - name: AWS_DEFAULT_REGION
+          value: "ap-northeast-2"
+        - name: AWS_METADATA_SERVICE_TIMEOUT
+          value: "10"
+        - name: AWS_METADATA_SERVICE_NUM_ATTEMPTS
+          value: "3"
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -31,9 +52,15 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
+        - name: SPRING_CONFIG_LOCATION
+          value: "classpath:/application.properties,file:/shared-config/application.properties"
         envFrom:
         - secretRef:
             name: backend-secrets
+        volumeMounts:
+        - name: shared-config
+          mountPath: /shared-config
+          readOnly: true
         resources:
           requests:
             memory: "1Gi"
@@ -54,3 +81,6 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 5 
+      volumes:
+      - name: shared-config
+        emptyDir: {}
