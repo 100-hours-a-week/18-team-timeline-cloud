@@ -34,3 +34,8 @@ variable "region" {
     default = "ap-northeast-2"
 }
 
+variable "vpc_cidr" {
+  description = "VPC CIDR 블록"
+  type        = string
+}
+

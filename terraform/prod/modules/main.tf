@@ -2,6 +2,9 @@
 module "sg" {
   source = "./sg"
   vpc_id = var.vpc_id
+  vpc_cidr = var.vpc_cidr_block
+  project = var.project
+  environment = var.environment
 }
 
 # OpenVPN
@@ -26,6 +29,9 @@ module "eks" {
 
   name = var.project
   vpc_id = var.vpc_id
+  vpc_cidr = var.vpc_cidr_block
+  project = var.project
+  environment = var.environment
   kubernetes_version = "1.33"
   region = "ap-northeast-2"
   
@@ -104,6 +110,7 @@ module "eks_utils" {
   name                = var.project
   region              = "ap-northeast-2"
   vpc_id              = var.vpc_id
+  vpc_cidr            = var.vpc_cidr_block
   public_subnet_id    = var.public_subnet_a_id
   cluster_name        = module.eks.cluster_name
   cluster_oidc_issuer = module.eks.cluster_oidc_issuer

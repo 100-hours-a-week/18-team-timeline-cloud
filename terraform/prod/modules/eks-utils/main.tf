@@ -17,6 +17,7 @@ module "bastion" {
 
   name = var.name
   vpc_id = var.vpc_id
+  vpc_cidr = var.vpc_cidr
   subnet_id = var.public_subnet_id
   cluster_name = var.cluster_name
   region = var.region

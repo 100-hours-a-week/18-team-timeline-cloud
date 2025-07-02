@@ -1,11 +1,16 @@
 # VPC 관련 변수
-variable "vpc_cidr_block" {
+variable "vpc_cidr" {
   description = "VPC의 CIDR 블록 (예: 10.0.0.0/16)"
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "VPC의 CIDR 블록 (예: 10.0.0.0/16)"
+variable "project" {
+  description = "프로젝트 이름"
+  type        = string
+}
+
+variable "environment" {
+  description = "환경 (예: dev, prod)"
   type        = string
 }
 
@@ -73,17 +78,14 @@ variable "peering_vpc_id" {
 variable "front_private_ip" {
   description = "프론트엔드 EC2의 고정 프라이빗 IP"
   type        = string
-  default     = "10.0.10.5"
 }
 
 variable "backend_private_ip" {
   description = "백엔드 EC2의 고정 프라이빗 IP"
   type        = string
-  default     = "10.0.20.5"
 }
 
 variable "db_private_ip" {
   description = "DB EC2의 고정 프라이빗 IP"
   type        = string
-  default     = "10.0.30.5"
 } 

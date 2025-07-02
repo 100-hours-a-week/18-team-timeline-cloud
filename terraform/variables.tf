@@ -225,3 +225,22 @@ variable "domain_filters" {
 #   type        = string
 # }
 
+# Private IP 설정
+variable "front_private_ip" {
+  description = "프론트엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+  default     = "10.0.10.5"
+}
+
+variable "backend_private_ip" {
+  description = "백엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+  default     = "10.0.20.5"
+}
+
+variable "db_private_ip" {
+  description = "DB EC2의 고정 프라이빗 IP"
+  type        = string
+  default     = "10.0.30.5"
+}
+

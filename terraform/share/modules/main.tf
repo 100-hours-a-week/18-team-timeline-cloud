@@ -2,7 +2,9 @@
 module "vpc" {
   source = "./vpc"
   
-  cidr_block = var.vpc_cidr_block
+  cidr_block = var.vpc_cidr
+  project = var.project
+  environment = var.environment
 }
 
 # Subnet 생성

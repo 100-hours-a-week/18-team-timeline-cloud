@@ -20,22 +20,32 @@ output "sg_db_id" {
 }
 
 # EC2 outputs
-output "frontend_a_instance_id" {
-  description = "Frontend A Instance ID"
-  value       = module.ec2.frontend_a_instance_id
+output "frontend_instance_id" {
+  description = "Frontend EC2 Instance ID"
+  value       = module.ec2.frontend_instance_id
 }
 
-output "backend_a_instance_id" {
-  description = "Backend A Instance ID"
-  value       = module.ec2.backend_a_instance_id
+output "backend_instance_id" {
+  description = "Backend EC2 Instance ID"
+  value       = module.ec2.backend_instance_id
 }
 
-output "reverse_proxy_public_ip" {
-  description = "Reverse Proxy Public IP"
-  value       = module.ec2.reverse_proxy_public_ip
+output "db_instance_id" {
+  description = "DB EC2 Instance ID"
+  value       = module.ec2.db_instance_id
 }
 
-output "backend_a_instance_ip" {
-  description = "Backend A Instance Public IP"
-  value       = module.ec2.backend_a_instance_ip
+output "frontend_instance_ip" {
+  description = "Frontend EC2 Instance Private IP"
+  value       = module.ec2.frontend_instance_ip
+}
+
+output "backend_instance_ip" {
+  description = "Backend EC2 Instance Private IP"
+  value       = module.ec2.backend_instance_ip
+}
+
+output "db_instance_ip" {
+  description = "DB EC2 Instance Private IP"
+  value       = module.ec2.db_instance_ip
 } 

@@ -16,6 +16,9 @@ module "cluster" {
 
     name =  var.name
     vpc_id = var.vpc_id
+    vpc_cidr = var.vpc_cidr
+    project = var.project
+    environment = var.environment
     private_subnet_ids = local.all_node_group_subnets
     kubernetes_version = var.kubernetes_version
 

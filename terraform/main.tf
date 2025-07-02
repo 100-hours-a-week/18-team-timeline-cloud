@@ -18,7 +18,7 @@ module "shared" {
   source = "./share/modules"
 
   # VPC 설정
-  vpc_cidr_block = var.vpc_cidr_block
+  vpc_cidr = var.vpc_cidr_block
   
   # 가용 영역
   az_a = var.az_a
@@ -40,6 +40,15 @@ module "shared" {
   private_subnet_a_db_cidr = var.private_subnet_a_db_cidr
   private_subnet_c_db_cidr = var.private_subnet_c_db_cidr
 
+  # Private IP 설정
+  front_private_ip = var.front_private_ip
+  backend_private_ip = var.backend_private_ip
+  db_private_ip = var.db_private_ip
+
+  # 공통 설정
+  project = var.project
+  environment = var.environment
+
   # Peering 설정
   peering_vpc_id = var.peering_vpc_id
 }
@@ -50,6 +59,7 @@ module "dev" {
 
   # VPC 및 네트워크
   vpc_id = module.shared.vpc_id
+  vpc_cidr_block = module.shared.vpc_cidr
   
   public_subnet_a_id = module.shared.public_subnet_a_id
   private_subnet_a_front_id = module.shared.private_subnet_a_front_id
@@ -61,6 +71,11 @@ module "dev" {
   instance_type    = var.instance_type
   instance_type_be = var.instance_type_be
   key_pair_name    = var.key_pair_name
+
+  # Private IP 설정
+  front_private_ip = var.front_private_ip
+  backend_private_ip = var.backend_private_ip
+  db_private_ip = var.db_private_ip
 
   # Route53 설정
   dns_zone_id = var.dns_zone_id

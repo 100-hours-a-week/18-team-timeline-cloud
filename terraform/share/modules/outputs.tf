@@ -9,6 +9,11 @@ output "vpc_cidr_block" {
   value       = module.vpc.vpc_cidr_block
 }
 
+output "vpc_cidr" {
+  description = "VPC CIDR 블록"
+  value       = var.vpc_cidr
+}
+
 output "igw_id" {
   description = "인터넷 게이트웨이 ID"
   value       = module.vpc.igw_id

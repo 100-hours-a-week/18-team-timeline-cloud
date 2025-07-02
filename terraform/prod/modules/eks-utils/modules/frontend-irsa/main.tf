@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
+  }
+}
+
 # Frontend IRSA IAM Role
 resource "aws_iam_role" "frontend_irsa" {
   name = "${var.name}-frontend-irsa-role"

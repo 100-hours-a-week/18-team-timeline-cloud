@@ -77,3 +77,24 @@ variable "environment" {
   description = "Environment name (e.g., dev, prod)"
   type        = string
 }
+
+# Private IP 설정
+variable "front_private_ip" {
+  description = "프론트엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+}
+
+variable "backend_private_ip" {
+  description = "백엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+}
+
+variable "db_private_ip" {
+  description = "DB EC2의 고정 프라이빗 IP"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}

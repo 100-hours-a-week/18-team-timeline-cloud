@@ -28,10 +28,11 @@ resource "aws_security_group" "frontend" {
   }
 
   ingress {
+    description = "Allow internal SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
@@ -50,7 +51,7 @@ resource "aws_security_group" "backend" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow internal traffic from VPC"
+    description = "Allow internal traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -66,10 +67,11 @@ resource "aws_security_group" "backend" {
   }
 
   ingress {
+    description = "Allow internal SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {

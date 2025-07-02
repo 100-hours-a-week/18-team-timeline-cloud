@@ -4,6 +4,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_cidr_block" {
+  description = "VPC CIDR 블록"
+  type        = string
+}
+
 # Subnet 관련 변수
 variable "public_subnet_a_id" {
   description = "Public Subnet A ID"
@@ -65,5 +70,21 @@ variable "project" {
 
 variable "environment" {
   description = "Environment name (e.g., dev, prod)"
+  type        = string
+}
+
+# Private IP 설정
+variable "front_private_ip" {
+  description = "프론트엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+}
+
+variable "backend_private_ip" {
+  description = "백엔드 EC2의 고정 프라이빗 IP"
+  type        = string
+}
+
+variable "db_private_ip" {
+  description = "DB EC2의 고정 프라이빗 IP"
   type        = string
 } 

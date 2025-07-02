@@ -1,4 +1,9 @@
 variable "vpc_id" {
-  description = "VPC ID where the security groups will be created"
+  description = "VPC ID"
+  type        = string
+}
+
+variable "vpc_cidr" {
+  description = "VPC CIDR 블록"
   type        = string
 }

@@ -6,6 +6,11 @@ variable "vpc_id" {
   type = string
 }
 
+variable "vpc_cidr" {
+  description = "VPC CIDR 블록"
+  type        = string
+}
+
 variable "public_subnet_id" {
   type = string
 }

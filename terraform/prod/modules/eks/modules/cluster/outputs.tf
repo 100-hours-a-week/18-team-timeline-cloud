@@ -25,7 +25,7 @@ output "eks_oidc_issuer" {
 
 output "eks_cluster_security_group_id" {
   description = "Security group ID attached to the EKS cluster"
-  value       = aws_security_group.this.id
+  value       = aws_security_group.cluster.id
 }
 
 output "eks_cluster_iam_role_arn" {
