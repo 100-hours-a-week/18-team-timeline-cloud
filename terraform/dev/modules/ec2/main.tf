@@ -204,7 +204,7 @@ resource "aws_instance" "reverse_proxy" {
 # IAM Role for EC2 Instances to connect to ECR
 # ─────────────────────────────────────────────────────
 resource "aws_iam_role" "ec2_instance_role" {
-  name = "ec2-instance-role-for-ecr"
+  name = "${var.project}-${var.environment}-ec2-instance-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

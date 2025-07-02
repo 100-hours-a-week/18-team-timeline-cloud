@@ -6,9 +6,8 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket         = "ktb18-terraform-state-bucket"
-    key            = "global/s3/terraform.tfstate"
+    key            = "eks/s3/terraform.tfstate"
     region         = "ap-northeast-2"
-    dynamodb_table = "terraform-lock-table"
     encrypt        = true
   }
 }
