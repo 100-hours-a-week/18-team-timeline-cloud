@@ -14,6 +14,7 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group 
       containers:
@@ -22,17 +23,17 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        # 환경변수 설정 (필요에 따라 수정)
         - name: NODE_ENV
           value: "production"
         - name: PORT
           value: "8080"
-        # RDS 연결 정보는 Secret으로 관리하는 것이 좋음
-        # - name: DB_HOST
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: db-host
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        envFrom:
+        - secretRef:
+            name: backend-secrets
         resources:
           requests:
             memory: "1Gi"

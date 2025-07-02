@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service-lb
+  labels:
+    app: frontend
+  annotations:
+    # ALB 기본 설정
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-target-type: ip
+    
+    # SSL/HTTPS 설정
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-northeast-2:346011888304:certificate/30f0927f-0fb0-4e93-b79e-ef89afd9f2ff
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-redirect: "80:443"
+    
+    # 도메인 설정 (External-DNS)
+    external-dns.alpha.kubernetes.io/hostname: eks.tam-nara.com
+    
+    # ALB 이름 및 태그
+    service.beta.kubernetes.io/aws-load-balancer-name: frontend-alb
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: Environment=prod,Project=tamnara,kubernetes.io/cluster/tamnara-cluster=owned,kubernetes.io/managed-by=argocd
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 80
+    protocol: TCP 
