@@ -135,7 +135,7 @@ resource "aws_iam_role" "backend_irsa" {
         }
         Condition = {
           StringEquals = {
-            "${replace(var.cluster_oidc_issuer, "https://", "")}:sub" = "system:serviceaccount:${var.backend_namespace}:${var.backend_service_account_name}"
+            "${replace(var.cluster_oidc_issuer, "https://", "")}:sub" = "system:serviceaccount:${var.app_namespace}:${var.backend_service_account_name}"
             "${replace(var.cluster_oidc_issuer, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
@@ -152,7 +152,7 @@ resource "kubernetes_service_account" "backend" {
   
   metadata {
     name      = var.backend_service_account_name
-    namespace = var.backend_namespace
+    namespace = var.app_namespace
     
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.backend_irsa[0].arn
@@ -162,6 +162,8 @@ resource "kubernetes_service_account" "backend" {
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
+  
+  depends_on = [kubernetes_namespace.app_namespace]
 }
 
 # Backend S3 read-only access
