@@ -68,8 +68,6 @@ variable "enable_ebs_csi_driver" {
   default = true
 }
 
-
-
 variable "enable_argocd" {
   description = "Enable ArgoCD"
   type = bool
@@ -118,6 +116,16 @@ variable "node_iam_role_arns" {
 
 variable "default_tags" {
   type = map(string)
+}
+
+variable "project" {
+  type        = string
+  description = "Project name"
+}
+
+variable "environment" {
+  type        = string
+  description = "Environment name"
 }
 
  

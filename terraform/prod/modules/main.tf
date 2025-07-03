@@ -222,7 +222,7 @@ module "rds" {
   private_subnet_c_db_id = var.private_subnet_c_db_id
 
   backend_sg_id        = module.sg.backend_sg_id
-  eks_cluster_sg_id    = module.eks.cluster_security_group_id
+  eks_cluster_sg_id    = module.eks.cluster_default_security_group_id  # EKS 자동 생성 보안 그룹 (Node Groups가 실제 사용)
 
   db_name              = var.db_name
   db_username          = var.db_username

@@ -1,5 +1,5 @@
 output "eks_cluster_id" {
-  description = "EKS Cluster name"
+  description = "EKS Cluster ID"
   value       = aws_eks_cluster.this.id
 }
 
@@ -24,8 +24,13 @@ output "eks_oidc_issuer" {
 }
 
 output "eks_cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
+  description = "Security group ID attached to the EKS cluster (custom)"
   value       = aws_security_group.cluster.id
+}
+
+output "eks_cluster_default_security_group_id" {
+  description = "Security group ID automatically created by EKS (used by managed node groups)"
+  value       = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
 }
 
 output "eks_cluster_iam_role_arn" {

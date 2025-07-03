@@ -24,8 +24,13 @@ output "cluster_oidc_issuer" {
 }
 
 output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
+  description = "Security group ID attached to the EKS cluster (custom)"
   value       = module.cluster.eks_cluster_security_group_id
+}
+
+output "cluster_default_security_group_id" {
+  description = "Security group ID automatically created by EKS (used by managed node groups)"
+  value       = module.cluster.eks_cluster_default_security_group_id
 }
 
 output "cluster_iam_role_arn" {
