@@ -11,7 +11,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-target-type: ip
     
     # SSL/HTTPS 설정
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-northeast-2:346011888304:certificate/30f0927f-0fb0-4e93-b79e-ef89afd9f2ff
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-northeast-2:346011888304:certificate/b40a7d76-eafd-46b8-adcd-c2c62ae124a7
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
     service.beta.kubernetes.io/aws-load-balancer-ssl-redirect: "80:443"
