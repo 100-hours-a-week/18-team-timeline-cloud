@@ -147,9 +147,6 @@ module "eks_utils" {
   # EBS CSI Driver 설정 (Redis PVC 문제 해결)
   enable_ebs_csi_driver   = true
 
-  # Secrets 설정 (Parameter Store → Kubernetes Secret)
-  enable_secrets = true
-
   # External-DNS 설정 
   enable_external_dns     = var.enable_external_dns     # tam-nara.com 도메인 자동 관리
   domain_filters          = var.domain_filters          # ["tam-nara.com"]
@@ -172,6 +169,48 @@ module "eks_utils" {
   }
 
   depends_on = [module.eks]
+}
+
+# ============================================================================
+# EKS CONFIG (Application Configuration)
+# ============================================================================
+# EKS 애플리케이션 설정을 담당하는 모듈
+# - IRSA (Frontend + Backend Service Account & IAM Role)
+# - Secrets (Parameter Store → Kubernetes Secret)
+# ============================================================================
+
+module "eks_config" {
+  source = "./eks-config"
+  
+  # Provider 설정
+  providers = {
+    aws        = aws
+    kubernetes = kubernetes
+  }
+
+  # 기본 설정
+  name                = var.project
+  cluster_oidc_issuer = module.eks.cluster_oidc_issuer
+  
+  # Secrets 설정 (Parameter Store → Kubernetes Secret)
+  enable_secrets = true
+
+  # Frontend IRSA 설정
+  enable_frontend_irsa           = var.enable_frontend_irsa
+  frontend_namespace             = var.frontend_namespace
+  frontend_service_account_name  = var.frontend_service_account_name
+  frontend_s3_bucket_name        = var.frontend_s3_bucket_name
+  
+  # Backend IRSA 설정
+  k8s_namespace                  = var.k8s_namespace
+
+  # 공통 태그
+  default_tags = {
+    Project     = var.project
+    Environment = var.environment
+  }
+
+  depends_on = [module.eks_utils]
 }
 
 # RDS

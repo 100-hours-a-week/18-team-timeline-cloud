@@ -89,34 +89,7 @@ module "external_dns" {
   depends_on = [module.aws_auth, module.alb_controller]
 }
 
-# Unified IRSA (Frontend + Backend + Namespace)
-module "irsa" {
-  source = "./modules/irsa"
-  
-  providers = {
-    kubernetes = kubernetes
-  }
 
-  name                = var.name
-  cluster_oidc_issuer = var.cluster_oidc_issuer
-  default_tags        = var.default_tags
-  
-  # Namespace settings
-  create_namespace = true
-  app_namespace    = var.frontend_namespace
-  backend_namespace = var.k8s_namespace
-  
-  # Frontend IRSA settings
-  enable_frontend_irsa           = var.enable_frontend_irsa
-  frontend_service_account_name  = var.frontend_service_account_name
-  frontend_s3_bucket_name        = var.frontend_s3_bucket_name
-  
-  # Backend IRSA settings  
-  enable_backend_irsa           = true
-  backend_service_account_name  = "backend-service-account"
-  
-  depends_on = [module.aws_auth]
-}
 
 # EBS CSI Driver (Redis PVC 문제 해결을 위한 필수 addon)
 module "ebs_csi_driver" {
@@ -153,23 +126,7 @@ module "argocd" {
   depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver]
 }
 
-# ============================================================================
-# Secrets (Parameter Store → Kubernetes Secret)
-# ============================================================================
-module "secrets" {
-  source = "./modules/secrets"
-  
-  count = var.enable_secrets ? 1 : 0
-  
-  providers = {
-    aws        = aws
-    kubernetes = kubernetes
-  }
-  
-  namespace = module.irsa.app_namespace
-  
-  depends_on = [module.aws_auth]
-}
+
 
 # ============================================================================
 # Data Sources

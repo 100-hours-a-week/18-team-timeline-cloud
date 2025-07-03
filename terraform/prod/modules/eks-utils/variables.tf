@@ -68,11 +68,7 @@ variable "enable_ebs_csi_driver" {
   default = true
 }
 
-variable "enable_secrets" {
-  description = "Enable Parameter Store to Kubernetes Secret conversion"
-  type        = bool
-  default     = true
-}
+
 
 variable "enable_argocd" {
   description = "Enable ArgoCD"
@@ -124,43 +120,4 @@ variable "default_tags" {
   type = map(string)
 }
 
-# Frontend IRSA variables
-variable "enable_frontend_irsa" {
-  description = "Enable Frontend IRSA for S3 access"
-  type = bool
-  default = true
-}
-
-variable "frontend_namespace" {
-  description = "Kubernetes namespace for frontend service account"
-  type = string
-  default = "tamnara-prod"
-}
-
-variable "frontend_service_account_name" {
-  description = "Name of the frontend Kubernetes service account"
-  type = string
-  default = "frontend-service-account"
-}
-
-variable "frontend_s3_bucket_name" {
-  description = "S3 bucket name for frontend environment files"
-  type = string
-  default = "tamnara-environment"
-}
-
-variable "k8s_namespace" {
-  type        = string
-  description = "Kubernetes namespace"
-  default     = "default"
-}
-
-variable "project" {
-  type        = string
-  description = "Project name"
-}
-
-variable "environment" {
-  type        = string
-  description = "Environment name"
-} 
+ 
