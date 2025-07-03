@@ -34,6 +34,8 @@ spec:
         envFrom:
         - secretRef:
             name: backend-secrets
+        - secretRef:
+            name: backend-environments ## 나중에 제거
         resources:
           requests:
             memory: "1Gi"
