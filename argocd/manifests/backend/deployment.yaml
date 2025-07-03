@@ -17,24 +17,9 @@ spec:
       serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group 
-      initContainers:
-      - name: env-loader
-        image: amazon/aws-cli:2.13.25
-        command:
-        - sh
-        - -c
-        - |
-          aws s3 cp s3://your-bucket/backend/.env /config/env
-        volumeMounts:
-        - name: config
-          mountPath: /config
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
-        env: []  # 기존 환경변수 모두 제거
-        envFrom:  # .env 파일의 내용만 환경변수로 사용
-        - configMapRef:
-            name: backend-env
         ports:
         - containerPort: 8080
         env:
@@ -46,10 +31,14 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
-        volumeMounts:
-        - name: shared-config
-          mountPath: /shared-config
-          readOnly: true
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: REDIS_PASSWORD
+        envFrom:
+        - secretRef:
+            name: backend-secrets
         resources:
           requests:
             memory: "1Gi"
@@ -70,6 +59,3 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 5 
-      volumes:
-      - name: shared-config
-        emptyDir: {}
