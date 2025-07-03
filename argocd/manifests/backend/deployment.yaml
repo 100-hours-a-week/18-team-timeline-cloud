@@ -31,11 +31,6 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: backend-secrets
-              key: REDIS_PASSWORD
         envFrom:
         - secretRef:
             name: backend-secrets
