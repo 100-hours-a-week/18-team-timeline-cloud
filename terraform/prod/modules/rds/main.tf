@@ -51,7 +51,10 @@ resource "aws_db_instance" "this" {
   engine_version          = var.db_snapshot_identifier == null ? "8.0" : null
   db_name                 = var.db_snapshot_identifier == null ? var.db_name : null
   username                = var.db_snapshot_identifier == null ? var.db_username : null
-  password                = var.db_snapshot_identifier == null ? var.db_password : null
+  
+  # 민감한 값은 조건부 표현식을 사용하지 않고 항상 설정
+  # 스냅샷에서 복원할 때는 기존 비밀번호를 유지하고, 새로 생성할 때는 새 비밀번호 사용
+  password                = var.db_password
   
   port                    = 3306
   multi_az                = false
