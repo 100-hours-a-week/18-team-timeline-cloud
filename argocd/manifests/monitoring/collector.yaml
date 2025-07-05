@@ -1,0 +1,88 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: adot-collector
+  namespace: opentelemetry-operator-system
+spec:
+  mode: deployment
+  serviceAccount: adot-collector
+  config: |
+    # ===== 데이터 수신 설정 =====
+    receivers:
+      otlp:  # OpenTelemetry Protocol 수신기
+        protocols:
+          grpc:  # Java Agent가 gRPC로 데이터 전송
+            endpoint: 0.0.0.0:4317
+          http:  # HTTP도 지원 (현재 미사용)
+            endpoint: 0.0.0.0:4318
+
+    # ===== 데이터 처리 파이프라인 =====
+    processors:
+      # 성능 최적화를 위한 배치 처리
+      batch:
+      
+      # 메모리 사용량 제한
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 1000
+      
+      # 환경 정보 자동 감지 (EKS 등)
+      resourcedetection:
+        detectors: [env, system, eks]
+        timeout: 2s
+      
+      # Kubernetes 메타데이터 추가
+      k8sattributes:
+        auth_type: "serviceAccount"
+        passthrough: false
+        filter:
+          node_from_env_var: KUBE_NODE_NAME
+        extract:
+          metadata:
+            - k8s.pod.name      # Pod 이름
+            - k8s.pod.uid       # Pod UID
+            - k8s.deployment.name  # Deployment 이름
+            - k8s.namespace.name   # Namespace
+            - k8s.node.name     # Node 이름
+            - k8s.container.name   # Container 이름
+
+    # ===== 데이터 내보내기 설정 =====
+    exporters:
+      # 트레이스는 X-Ray로 전송
+      awsxray:
+        region: ${AWS_REGION}
+      
+      # 메트릭은 Amazon Managed Prometheus로 전송
+      prometheusremotewrite:
+        endpoint: ${AMP_ENDPOINT}
+        auth:
+          authenticator: sigv4auth
+      
+      # 디버깅용 로그 출력
+      logging:
+        loglevel: debug
+
+    # ===== 부가 기능 =====
+    extensions:
+      # 헬스체크 엔드포인트
+      health_check:
+      # AWS 서비스 인증
+      sigv4auth:
+        region: ${AWS_REGION}
+        service: "aps"
+
+    # ===== 서비스 파이프라인 구성 =====
+    service:
+      extensions: [health_check, sigv4auth]
+      pipelines:
+        # 트레이스 처리 파이프라인
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, k8sattributes, resourcedetection, batch]
+          exporters: [awsxray, logging]
+        
+        # 메트릭 처리 파이프라인
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, k8sattributes, resourcedetection, batch]
+          exporters: [prometheusremotewrite, logging] 
