@@ -1,0 +1,81 @@
+extensions:
+  health_check:
+  sigv4auth:
+    region: ${region}
+    service: "aps"
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1536
+    spike_limit_mib: 512
+
+  resourcedetection:
+    detectors: ["eks"]
+    timeout: 2s
+
+exporters:
+  %{ if enable_prometheus_metrics }
+  prometheusremotewrite:
+    endpoint: "https://aps-workspaces.${region}.amazonaws.com/workspaces/ws-xxx/api/v1/remote_write"
+    auth:
+      authenticator: sigv4auth
+  %{ endif }
+
+  %{ if enable_cloudwatch_metrics }
+  awsemf:
+    region: ${region}
+    log_group_name: "/aws/containerinsights/${cluster_name}/performance"
+    log_stream_name: "adot-collector"
+    namespace: "ContainerInsights"
+    dimension_rollup_option: "NoDimensionRollup"
+    parse_json_encoded_attr_values: ["Sources", "kubernetes"]
+    metric_declarations:
+      - dimensions: [[ClusterName]]
+        metric_name_selectors:
+          - "^container_.*"
+          - "^pod_.*"
+          - "^node_.*"
+  %{ endif }
+
+  %{ if enable_xray_traces }
+  awsxray:
+    region: ${region}
+  %{ endif }
+
+service:
+  pipelines:
+    %{ if enable_prometheus_metrics }
+    metrics/prometheus:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheusremotewrite]
+    %{ endif }
+
+    %{ if enable_cloudwatch_metrics }
+    metrics/cloudwatch:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [awsemf]
+    %{ endif }
+
+    %{ if enable_xray_traces }
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [awsxray]
+    %{ endif }
+
+  extensions: [health_check, sigv4auth] 
