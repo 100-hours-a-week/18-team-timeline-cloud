@@ -217,4 +217,11 @@ variable "k8s_namespace" {
   type        = string
   description = "Kubernetes namespace"
   default     = "default"
+}
+
+# ADOT 설정
+variable "enable_adot" {
+  description = "Enable AWS Distro for OpenTelemetry"
+  type        = bool
+  default     = false
 } 

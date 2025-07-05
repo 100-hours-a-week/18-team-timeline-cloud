@@ -89,7 +89,19 @@ module "external_dns" {
   depends_on = [module.aws_auth, module.alb_controller]
 }
 
+# ADOT Operator 설치
+module "adot" {
+  count = var.enable_adot ? 1 : 0
+  source = "./modules/adot"
 
+  cluster_name        = var.cluster_name
+  cluster_oidc_issuer = var.cluster_oidc_issuer
+  region             = var.region
+
+  depends_on = [
+    module.aws_auth
+  ]
+}
 
 # EBS CSI Driver (Redis PVC 문제 해결을 위한 필수 addon)
 module "ebs_csi_driver" {
@@ -123,12 +135,8 @@ module "argocd" {
   target_revision = var.target_revision
   applications_path = var.applications_path
   
-  depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver]
+  depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver, module.adot]
 }
-
-
-
-
 
 # ============================================================================
 # Data Sources
@@ -144,4 +152,12 @@ data "aws_iam_openid_connect_provider" "this" {
 locals {
   oidc_provider     = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
   oidc_provider_arn = data.aws_iam_openid_connect_provider.this.arn
-} 
+}
+
+# 공통 태그
+default_tags = {
+  Project     = var.project
+  Environment = var.environment
+}
+
+depends_on = [module.eks] 

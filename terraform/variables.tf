@@ -209,6 +209,12 @@ variable "domain_filters" {
   default     = []
 }
 
+# ADOT 설정
+variable "enable_adot" {
+  description = "Enable AWS Distro for OpenTelemetry"
+  type        = bool
+  default     = false
+}
 
 # variable "dev_ami_id" {
 #   description = "AMI ID for dev EC2"

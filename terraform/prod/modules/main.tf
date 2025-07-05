@@ -148,19 +148,22 @@ module "eks_utils" {
   enable_ebs_csi_driver   = true
 
   # External-DNS 설정 
-  enable_external_dns     = var.enable_external_dns     # tam-nara.com 도메인 자동 관리
-  domain_filters          = var.domain_filters          # ["tam-nara.com"]
+  enable_external_dns     = var.enable_external_dns
+  domain_filters          = var.domain_filters
 
   # ArgoCD 설정 
-  enable_argocd           = var.enable_argocd           # ArgoCD 설치 여부
-  argocd_safe_destroy     = var.argocd_safe_destroy     # 안전한 삭제 모드
-  argocd_chart_version    = var.argocd_chart_version    # ArgoCD Helm Chart 버전
+  enable_argocd           = var.enable_argocd
+  argocd_safe_destroy     = var.argocd_safe_destroy
+  argocd_chart_version    = var.argocd_chart_version
   
   # App of Apps 패턴 설정 (ArgoCD 애플리케이션 자동 배포)
-  enable_app_of_apps      = var.enable_app_of_apps      # App of Apps 활성화
-  repo_url                = var.repo_url                # Git 저장소 URL
-  target_revision         = var.target_revision         # Git 브랜치/태그
-  applications_path       = var.applications_path       # 애플리케이션 manifest 경로
+  enable_app_of_apps      = var.enable_app_of_apps
+  repo_url                = var.repo_url
+  target_revision         = var.target_revision
+  applications_path       = var.applications_path
+
+  # ADOT 설정
+  enable_adot            = var.enable_adot
 
   # 공통 태그
   default_tags = {

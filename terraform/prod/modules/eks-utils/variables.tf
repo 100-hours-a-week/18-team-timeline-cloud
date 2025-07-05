@@ -155,4 +155,25 @@ variable "prometheus_scrape_interval" {
   default     = "30s"
 }
 
+variable "enable_adot" {
+  description = "Enable AWS Distro for OpenTelemetry"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+}
+
+variable "cluster_oidc_issuer" {
+  description = "The OIDC issuer URL for the cluster"
+  type        = string
+}
+
+variable "region" {
+  description = "AWS region"
+  type        = string
+}
+
  
