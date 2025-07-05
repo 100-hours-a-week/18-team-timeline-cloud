@@ -128,4 +128,31 @@ variable "environment" {
   description = "Environment name"
 }
 
+# ============================================================================
+
+
+variable "enable_prometheus_metrics" {
+  description = "Enable Prometheus metrics collection"
+  type        = bool
+  default     = true
+}
+
+variable "enable_cloudwatch_metrics" {
+  description = "Enable CloudWatch metrics export"
+  type        = bool
+  default     = true
+}
+
+variable "enable_xray_traces" {
+  description = "Enable X-Ray traces export"
+  type        = bool
+  default     = true
+}
+
+variable "prometheus_scrape_interval" {
+  description = "Prometheus scrape interval"
+  type        = string
+  default     = "30s"
+}
+
  
