@@ -17,7 +17,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-redirect: "80:443"
     
     # 도메인 설정 (External-DNS)
-    external-dns.alpha.kubernetes.io/hostname: tam-nara.com
+    external-dns.alpha.kubernetes.io/hostname: eks.tam-nara.com
     
     # ALB 이름 및 태그
     service.beta.kubernetes.io/aws-load-balancer-name: frontend-alb

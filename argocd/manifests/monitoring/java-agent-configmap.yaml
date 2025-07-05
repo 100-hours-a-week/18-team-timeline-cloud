@@ -1,0 +1,10 @@
+# OpenTelemetry Java Agent를 모든 Pod에서 재사용 가능하도록 저장
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adot-java-agent
+  namespace: default
+binaryData:
+  # Base64로 인코딩된 Java Agent JAR 파일
+  # 이 파일이 각 Pod의 /opt/aws-opentelemetry-agent.jar에 마운트됨
+  aws-opentelemetry-agent.jar: ${BASE64_ENCODED_AGENT} 

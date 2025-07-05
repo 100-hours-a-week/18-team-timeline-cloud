@@ -1,0 +1,47 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Object
+    object:
+      metric:
+        name: http_server_active_requests
+      describedObject:
+        apiVersion: v1
+        kind: Service
+        name: backend
+      target:
+        type: Value
+        value: 10
+  - type: Object
+    object:
+      metric:
+        name: http_server_duration_seconds_sum
+      describedObject:
+        apiVersion: v1
+        kind: Service
+        name: backend
+      target:
+        type: Value
+        value: 1.5  # 1.5초 이상의 평균 응답 시간일 때 스케일 아웃
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 120 
