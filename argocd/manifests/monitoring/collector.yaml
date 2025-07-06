@@ -6,33 +6,33 @@ metadata:
 spec:
   mode: deployment
   serviceAccount: adot-collector
+  replicas: 1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
   config: |
     receivers:
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
-          http:
-            endpoint: 0.0.0.0:4318
     
     processors:
       batch:
     
     exporters:
       debug:
-        verbosity: detailed
-    
-    extensions:
-      health_check:
     
     service:
-      extensions: [health_check]
       pipelines:
         traces:
           receivers: [otlp]
           processors: [batch]
           exporters: [debug]
-        metrics:
-          receivers: [otlp]
-          processors: [batch]
-          exporters: [debug] 
+      telemetry:
+        logs:
+          level: info 
