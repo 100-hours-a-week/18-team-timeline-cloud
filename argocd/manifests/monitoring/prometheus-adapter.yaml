@@ -87,7 +87,7 @@ spec:
         - --metrics-relist-interval=30s
         - --v=4
         - --secure-port=6443
-        - --prometheus-url=http://tamnara-backend-service:80/actuator/prometheus
+        - --prometheus-url=http://tamnara-backend-service:9292/actuator/prometheus
         ports:
         - containerPort: 6443
         volumeMounts:

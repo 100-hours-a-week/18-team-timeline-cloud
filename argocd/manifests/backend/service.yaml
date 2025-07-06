@@ -9,7 +9,12 @@ spec:
   selector:
     app: backend
   ports:
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 8080
+    protocol: TCP
+  - name: management
+    port: 9292
+    targetPort: 9292
     protocol: TCP
   type: ClusterIP 

@@ -38,6 +38,15 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
+        # Spring Boot Actuator 설정
+        - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+          value: "health,info,metrics,prometheus"
+        - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
+          value: "always"
+        - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
+          value: "/actuator"
+        - name: MANAGEMENT_SECURITY_ENABLED
+          value: "false"
         # OpenTelemetry 설정 (HPA 메트릭을 위해)
         - name: OTEL_SERVICE_NAME
           value: "backend"
