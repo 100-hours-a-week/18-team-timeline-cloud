@@ -42,7 +42,7 @@ spec:
         - name: OTEL_SERVICE_NAME
           value: "backend"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://adot-collector:4317"
+          value: "http://adot-collector-collector:4317"
         envFrom:
         - secretRef:
             name: backend-secrets
