@@ -50,39 +50,29 @@ spec:
     exporters:
       # 트레이스는 X-Ray로 전송
       awsxray:
-        region: ${AWS_REGION}
+        region: ap-northeast-2
       
-      # 메트릭은 Amazon Managed Prometheus로 전송
-      prometheusremotewrite:
-        endpoint: ${AMP_ENDPOINT}
-        auth:
-          authenticator: sigv4auth
-      
-      # 디버깅용 로그 출력
-      logging:
-        loglevel: debug
+      # 디버깅용 로그 출력 (logging -> debug로 변경)
+      debug:
+        verbosity: detailed
 
     # ===== 부가 기능 =====
     extensions:
       # 헬스체크 엔드포인트
       health_check:
-      # AWS 서비스 인증
-      sigv4auth:
-        region: ${AWS_REGION}
-        service: "aps"
 
     # ===== 서비스 파이프라인 구성 =====
     service:
-      extensions: [health_check, sigv4auth]
+      extensions: [health_check]
       pipelines:
         # 트레이스 처리 파이프라인
         traces:
           receivers: [otlp]
           processors: [memory_limiter, k8sattributes, resourcedetection, batch]
-          exporters: [awsxray, logging]
+          exporters: [awsxray, debug]
         
         # 메트릭 처리 파이프라인
         metrics:
           receivers: [otlp]
           processors: [memory_limiter, k8sattributes, resourcedetection, batch]
-          exporters: [prometheusremotewrite, logging] 
+          exporters: [debug] 
