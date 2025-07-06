@@ -24,24 +24,6 @@ spec:
       serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group
-      initContainers:
-      - name: download-otel-agent
-        image: curlimages/curl:8.5.0
-        command: ["/bin/sh", "-c"]
-        args: 
-        - |
-          echo "Downloading OpenTelemetry Java Agent..."
-          curl -L -o /shared/aws-opentelemetry-agent.jar https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v1.32.0/aws-opentelemetry-agent.jar
-          if [ $? -eq 0 ]; then
-            echo "Successfully downloaded OpenTelemetry Java Agent"
-            ls -la /shared/aws-opentelemetry-agent.jar
-          else
-            echo "Failed to download OpenTelemetry Java Agent"
-            exit 1
-          fi
-        volumeMounts:
-        - name: shared-agent
-          mountPath: /shared
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -56,37 +38,11 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
-        # ===== OpenTelemetry 자동 계측 설정 시작 =====
-        # JVM에 Java Agent를 로드하는 핵심 설정
-        # 이 설정으로 인해 애플리케이션 코드 수정 없이 자동 계측이 가능
-        - name: JAVA_TOOL_OPTIONS
-          value: "-javaagent:/opt/aws-opentelemetry-agent.jar"
-        # 서비스 식별을 위한 기본 정보
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=backend,service.namespace=tamnara-prod"
-        # 트레이스 샘플링 설정 (100% 수집)
-        - name: OTEL_TRACES_SAMPLER
-          value: "parentbased_traceidratio"
-        - name: OTEL_TRACES_SAMPLER_ARG
-          value: "1.0"
-        # 메트릭 내보내기 형식을 OTLP로 지정
-        - name: OTEL_METRICS_EXPORTER
-          value: "otlp"
-        # 수집된 데이터를 전송할 ADOT Collector 주소
+        # OpenTelemetry 설정 (이미지에 포함된 Java Agent 사용)
+        - name: OTEL_SERVICE_NAME
+          value: "backend"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://adot-collector:4317"
-        # 자동 계측 대상 설정
-        # 기본적으로 모든 계측을 비활성화하고
-        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
-          value: "false"
-        # 필요한 것만 선택적으로 활성화
-        - name: OTEL_INSTRUMENTATION_SPRING_WEB_ENABLED
-          value: "true"  # REST API 호출 추적
-        - name: OTEL_INSTRUMENTATION_JDBC_ENABLED
-          value: "true"  # DB 쿼리 추적
-        - name: OTEL_INSTRUMENTATION_REDIS_ENABLED
-          value: "true"  # Redis 작업 추적
-        # ===== OpenTelemetry 자동 계측 설정 끝 =====
         envFrom:
         - secretRef:
             name: backend-secrets
@@ -109,11 +65,4 @@ spec:
             path: /health
             port: 8080
           initialDelaySeconds: 30
-          periodSeconds: 5
-        # Java Agent JAR 파일 마운트
-        volumeMounts:
-        - name: shared-agent
-          mountPath: /opt
-      volumes:
-      - name: shared-agent
-        emptyDir: {} 
+          periodSeconds: 5 
