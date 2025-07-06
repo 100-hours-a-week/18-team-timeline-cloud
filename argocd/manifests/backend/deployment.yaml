@@ -26,12 +26,20 @@ spec:
         eks.amazonaws.com/nodegroup: backend-node-group
       initContainers:
       - name: download-otel-agent
-        image: busybox:1.36
-        command: ["/bin/sh"]
-        args: ["/scripts/download-agent.sh"]
+        image: curlimages/curl:8.5.0
+        command: ["/bin/sh", "-c"]
+        args: 
+        - |
+          echo "Downloading OpenTelemetry Java Agent..."
+          curl -L -o /shared/aws-opentelemetry-agent.jar https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v1.32.0/aws-opentelemetry-agent.jar
+          if [ $? -eq 0 ]; then
+            echo "Successfully downloaded OpenTelemetry Java Agent"
+            ls -la /shared/aws-opentelemetry-agent.jar
+          else
+            echo "Failed to download OpenTelemetry Java Agent"
+            exit 1
+          fi
         volumeMounts:
-        - name: agent-download-script
-          mountPath: /scripts
         - name: shared-agent
           mountPath: /shared
       containers:
@@ -107,9 +115,5 @@ spec:
         - name: shared-agent
           mountPath: /opt
       volumes:
-      - name: agent-download-script
-        configMap:
-          name: adot-java-agent-script
-          defaultMode: 0755
       - name: shared-agent
         emptyDir: {} 
