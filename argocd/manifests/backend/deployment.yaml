@@ -38,11 +38,13 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
-        # OpenTelemetry 설정 (이미지에 포함된 Java Agent 사용)
+        # OpenTelemetry 설정 (HPA 메트릭을 위해)
         - name: OTEL_SERVICE_NAME
           value: "backend"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://adot-collector-collector:4317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=backend"
         envFrom:
         - secretRef:
             name: backend-secrets
