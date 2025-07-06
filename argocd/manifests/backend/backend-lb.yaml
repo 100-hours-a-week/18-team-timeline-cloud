@@ -9,15 +9,15 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "HTTP"
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/actuator/health"
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "9292"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8080"
   labels:
     app: backend-external
 spec:
   selector:
     app: backend
   ports:
-  - name: swagger
-    port: 9292
-    targetPort: 9292
+  - name: http
+    port: 80
+    targetPort: 8080
     protocol: TCP
   type: LoadBalancer 
