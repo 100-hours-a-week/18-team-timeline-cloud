@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: default
+  namespace: tamnara-prod
   labels:
     app: backend
 spec:
@@ -23,7 +23,17 @@ spec:
     spec:
       serviceAccountName: backend-service-account
       nodeSelector:
-        eks.amazonaws.com/nodegroup: backend-node-group 
+        eks.amazonaws.com/nodegroup: backend-node-group
+      initContainers:
+      - name: download-otel-agent
+        image: busybox:1.36
+        command: ["/bin/sh"]
+        args: ["/scripts/download-agent.sh"]
+        volumeMounts:
+        - name: agent-download-script
+          mountPath: /scripts
+        - name: shared-agent
+          mountPath: /shared
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -38,6 +48,37 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
+        # ===== OpenTelemetry 자동 계측 설정 시작 =====
+        # JVM에 Java Agent를 로드하는 핵심 설정
+        # 이 설정으로 인해 애플리케이션 코드 수정 없이 자동 계측이 가능
+        - name: JAVA_TOOL_OPTIONS
+          value: "-javaagent:/opt/aws-opentelemetry-agent.jar"
+        # 서비스 식별을 위한 기본 정보
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=backend,service.namespace=tamnara-prod"
+        # 트레이스 샘플링 설정 (100% 수집)
+        - name: OTEL_TRACES_SAMPLER
+          value: "parentbased_traceidratio"
+        - name: OTEL_TRACES_SAMPLER_ARG
+          value: "1.0"
+        # 메트릭 내보내기 형식을 OTLP로 지정
+        - name: OTEL_METRICS_EXPORTER
+          value: "otlp"
+        # 수집된 데이터를 전송할 ADOT Collector 주소
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://adot-collector.opentelemetry-operator-system:4317"
+        # 자동 계측 대상 설정
+        # 기본적으로 모든 계측을 비활성화하고
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          value: "false"
+        # 필요한 것만 선택적으로 활성화
+        - name: OTEL_INSTRUMENTATION_SPRING_WEB_ENABLED
+          value: "true"  # REST API 호출 추적
+        - name: OTEL_INSTRUMENTATION_JDBC_ENABLED
+          value: "true"  # DB 쿼리 추적
+        - name: OTEL_INSTRUMENTATION_REDIS_ENABLED
+          value: "true"  # Redis 작업 추적
+        # ===== OpenTelemetry 자동 계측 설정 끝 =====
         envFrom:
         - secretRef:
             name: backend-secrets
@@ -61,52 +102,14 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 5
-        # ===== OpenTelemetry 자동 계측 설정 시작 =====
-        
-        # JVM에 Java Agent를 로드하는 핵심 설정
-        # 이 설정으로 인해 애플리케이션 코드 수정 없이 자동 계측이 가능
-        - name: JAVA_TOOL_OPTIONS
-          value: "-javaagent:/opt/aws-opentelemetry-agent.jar"
-        
-        # 서비스 식별을 위한 기본 정보
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=backend,service.namespace=default"
-        
-        # 트레이스 샘플링 설정 (100% 수집)
-        - name: OTEL_TRACES_SAMPLER
-          value: "parentbased_traceidratio"
-        - name: OTEL_TRACES_SAMPLER_ARG
-          value: "1.0"
-        
-        # 메트릭 내보내기 형식을 OTLP로 지정
-        - name: OTEL_METRICS_EXPORTER
-          value: "otlp"
-        
-        # 수집된 데이터를 전송할 ADOT Collector 주소
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://adot-collector.opentelemetry-operator-system:4317"
-        
-        # 자동 계측 대상 설정
-        # 기본적으로 모든 계측을 비활성화하고
-        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
-          value: "false"
-        
-        # 필요한 것만 선택적으로 활성화
-        - name: OTEL_INSTRUMENTATION_SPRING_WEB_ENABLED
-          value: "true"  # REST API 호출 추적
-        - name: OTEL_INSTRUMENTATION_JDBC_ENABLED
-          value: "true"  # DB 쿼리 추적
-        - name: OTEL_INSTRUMENTATION_REDIS_ENABLED
-          value: "true"  # Redis 작업 추적
-        
-        # ===== OpenTelemetry 자동 계측 설정 끝 =====
-        
         # Java Agent JAR 파일 마운트
         volumeMounts:
-        - name: otel-agent
-          mountPath: /opt/aws-opentelemetry-agent.jar
-          subPath: aws-opentelemetry-agent.jar
+        - name: shared-agent
+          mountPath: /opt
       volumes:
-      - name: otel-agent
+      - name: agent-download-script
         configMap:
-          name: adot-java-agent 
+          name: adot-java-agent-script
+          defaultMode: 0755
+      - name: shared-agent
+        emptyDir: {} 

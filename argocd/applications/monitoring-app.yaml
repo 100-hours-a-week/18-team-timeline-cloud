@@ -6,12 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/18-team-project/18-team-timeline-cloud.git
-    targetRevision: HEAD
+    repoURL: https://github.com/100-hours-a-week/18-team-timeline-cloud.git
+    targetRevision: main
     path: argocd/manifests/monitoring
   destination:
     server: https://kubernetes.default.svc
-    namespace: monitoring
+    namespace: tamnara-prod
   syncPolicy:
     automated:
       prune: true
