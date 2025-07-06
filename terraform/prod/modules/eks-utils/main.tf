@@ -15,6 +15,22 @@ terraform {
   }
 }
 
+# ============================================================================
+# Data Sources
+# ============================================================================
+data "aws_eks_cluster" "this" {
+  name = var.cluster_name
+}
+
+data "aws_iam_openid_connect_provider" "this" {
+  url = data.aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+locals {
+  oidc_provider     = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
+  oidc_provider_arn = data.aws_iam_openid_connect_provider.this.arn
+}
+
 # Bastion Host
 module "bastion" {
   source = "./modules/bastion"
@@ -89,20 +105,6 @@ module "external_dns" {
   depends_on = [module.aws_auth, module.alb_controller]
 }
 
-# ADOT Operator 설치
-module "adot" {
-  count = var.enable_adot ? 1 : 0
-  source = "./modules/adot"
-
-  cluster_name        = var.cluster_name
-  cluster_oidc_issuer = var.cluster_oidc_issuer
-  region             = var.region
-
-  depends_on = [
-    module.aws_auth
-  ]
-}
-
 # EBS CSI Driver (Redis PVC 문제 해결을 위한 필수 addon)
 module "ebs_csi_driver" {
   source = "./modules/ebs-csi-driver"
@@ -135,29 +137,20 @@ module "argocd" {
   target_revision = var.target_revision
   applications_path = var.applications_path
   
-  depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver, module.adot]
+  depends_on = [module.aws_auth, module.alb_controller, module.external_dns, module.ebs_csi_driver]
 }
 
-# ============================================================================
-# Data Sources
-# ============================================================================
-data "aws_eks_cluster" "this" {
-  name = var.cluster_name
-}
+# AWS Distro for OpenTelemetry (ADOT) - cert-manager 의존성 제거 테스트
+module "adot" {
+  source = "./modules/adot"
+  
+  count = var.enable_adot ? 1 : 0
 
-data "aws_iam_openid_connect_provider" "this" {
-  url = data.aws_eks_cluster.this.identity[0].oidc[0].issuer
-}
+  name = var.name
+  cluster_name = var.cluster_name
+  enable_adot = true
+  addon_version = var.addon_version
+  default_tags = var.default_tags
 
-locals {
-  oidc_provider     = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
-  oidc_provider_arn = data.aws_iam_openid_connect_provider.this.arn
-}
-
-# 공통 태그
-default_tags = {
-  Project     = var.project
-  Environment = var.environment
-}
-
-depends_on = [module.eks] 
+  depends_on = [module.aws_auth]
+} 

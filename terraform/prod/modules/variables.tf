@@ -128,6 +128,26 @@ variable "enable_argocd" {
   default     = false
 }
 
+# cert-manager 관련 변수
+variable "enable_cert_manager" {
+  description = "Enable cert-manager"
+  type        = bool
+  default     = true
+}
+
+variable "cert_manager_addon_version" {
+  description = "Version of the cert-manager add-on to use"
+  type        = string
+  default     = "v1.16.2-eksbuild.1"
+}
+
+# ADOT 관련 변수
+variable "addon_version" {
+  description = "Version of the ADOT add-on to use"
+  type        = string
+  default     = "v0.117.0-eksbuild.1"
+}
+
 variable "argocd_safe_destroy" {
   description = "Enable safe destroy mode for ArgoCD (disable before destroy)"
   type        = bool
@@ -217,11 +237,4 @@ variable "k8s_namespace" {
   type        = string
   description = "Kubernetes namespace"
   default     = "default"
-}
-
-# ADOT 설정
-variable "enable_adot" {
-  description = "Enable AWS Distro for OpenTelemetry"
-  type        = bool
-  default     = false
 } 

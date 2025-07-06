@@ -1,201 +1,82 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.0"
-    }
-  }
-}
-
-# ADOT Operator EKS Add-on 설치
 resource "aws_eks_addon" "adot" {
-  cluster_name = var.cluster_name
-  addon_name   = "adot"
-  addon_version = "v0.88.0-eksbuild.1"  # 최신 안정 버전
+  count = var.enable_adot ? 1 : 0
 
-  configuration_values = jsonencode({
-    adotCollector = {
-      serviceAccount = {
-        create = true
-        annotations = {
-          "eks.amazonaws.com/role-arn" = aws_iam_role.adot_collector.arn
-        }
-      }
+  cluster_name                = var.cluster_name
+  addon_name                 = "adot"
+  # 버전을 명시하지 않으면 AWS가 호환 버전을 자동 선택
+  service_account_role_arn  = aws_iam_role.adot[0].arn
+  preserve                  = true
+
+  tags = merge(
+    var.default_tags,
+    {
+      Name = "${var.name}-adot-addon"
     }
-  })
+  )
 }
 
-# ADOT Collector용 IAM Role
-resource "aws_iam_role" "adot_collector" {
-  name = "${var.cluster_name}-adot-collector"
+# Data source for OIDC provider
+data "aws_eks_cluster" "cluster" {
+  count = var.enable_adot ? 1 : 0
+  name  = var.cluster_name
+}
+
+data "aws_iam_openid_connect_provider" "cluster" {
+  count = var.enable_adot ? 1 : 0
+  url   = data.aws_eks_cluster.cluster[0].identity[0].oidc[0].issuer
+}
+
+# ADOT IAM Role for Service Account (IRSA)
+resource "aws_iam_role" "adot" {
+  count = var.enable_adot ? 1 : 0
+
+  name = "${var.name}-adot-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRoleWithWebIdentity"
         Effect = "Allow"
         Principal = {
-          Federated = var.oidc_provider_arn
+          Federated = data.aws_iam_openid_connect_provider.cluster[0].arn
         }
+        Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${var.oidc_provider}:sub" = "system:serviceaccount:opentelemetry-operator-system:adot-collector"
-            "${var.oidc_provider}:aud" = "sts.amazonaws.com"
+            "${replace(data.aws_iam_openid_connect_provider.cluster[0].url, "https://", "")}:sub" = "system:serviceaccount:opentelemetry-operator-system:adot-collector"
+            "${replace(data.aws_iam_openid_connect_provider.cluster[0].url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
       }
     ]
   })
 
-  tags = var.tags
+  tags = merge(
+    var.default_tags,
+    {
+      Name = "${var.name}-adot-role"
+    }
+  )
 }
 
-# CloudWatch 권한
-resource "aws_iam_role_policy_attachment" "adot_amp_policy" {
-  role       = aws_iam_role.adot_collector.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSManagedPrometheusFullAccess"
-}
+# ADOT IAM Policy
+resource "aws_iam_role_policy_attachment" "adot_policy" {
+  count = var.enable_adot ? 1 : 0
 
-# X-Ray 권한
-resource "aws_iam_role_policy_attachment" "adot_xray_policy" {
-  role       = aws_iam_role.adot_collector.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  role       = aws_iam_role.adot[0].name
 }
 
-# ADOT Collector ConfigMap
-resource "kubernetes_config_map" "adot_collector_config" {
-  metadata {
-    name      = "adot-collector-config"
-    namespace = var.adot_namespace
-  }
+resource "aws_iam_role_policy_attachment" "cloudwatch_policy" {
+  count = var.enable_adot ? 1 : 0
 
-  data = {
-    "collector-config.yaml" = templatefile("${path.module}/templates/collector-config.yaml", {
-      region                    = var.region
-      enable_prometheus_metrics = var.enable_prometheus_metrics
-      enable_cloudwatch_metrics = var.enable_cloudwatch_metrics
-      enable_xray_traces       = var.enable_xray_traces
-      prometheus_scrape_interval = var.prometheus_scrape_interval
-    })
-  }
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.adot[0].name
 }
 
-# ADOT Collector Service Account
-resource "kubernetes_service_account" "adot_collector" {
-  metadata {
-    name      = var.adot_service_account_name
-    namespace = var.adot_namespace
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.adot_collector.arn
-    }
-  }
-}
+resource "aws_iam_role_policy_attachment" "amp_policy" {
+  count = var.enable_adot ? 1 : 0
 
-# ADOT Collector Deployment
-resource "kubernetes_deployment" "adot_collector" {
-  metadata {
-    name      = "adot-collector"
-    namespace = var.adot_namespace
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels = {
-        app = "adot-collector"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "adot-collector"
-        }
-      }
-
-      spec {
-        service_account_name = kubernetes_service_account.adot_collector.metadata[0].name
-        
-        containers {
-          name  = "adot-collector"
-          image = "public.ecr.aws/aws-observability/aws-otel-collector:latest"
-          
-          args = [
-            "--config=/conf/collector-config.yaml"
-          ]
-
-          volume_mounts {
-            name       = "collector-config"
-            mount_path = "/conf"
-          }
-
-          resources {
-            limits = {
-              cpu    = "1"
-              memory = "2Gi"
-            }
-            requests = {
-              cpu    = "200m"
-              memory = "400Mi"
-            }
-          }
-        }
-
-        volumes {
-          name = "collector-config"
-          config_map {
-            name = kubernetes_config_map.adot_collector_config.metadata[0].name
-          }
-        }
-      }
-    }
-  }
-}
-
-# ADOT Collector Service
-resource "kubernetes_service" "adot_collector" {
-  metadata {
-    name      = "adot-collector"
-    namespace = var.adot_namespace
-  }
-
-  spec {
-    selector = {
-      app = "adot-collector"
-    }
-
-    port {
-      name        = "otlp-grpc"
-      port        = 4317
-      target_port = 4317
-    }
-
-    port {
-      name        = "otlp-http"
-      port        = 4318
-      target_port = 4318
-    }
-  }
-}
-
-variable "cluster_name" {
-  type = string
-}
-
-variable "oidc_provider" {
-  type = string
-}
-
-variable "oidc_provider_arn" {
-  type = string
-}
-
-output "adot_collector_role_arn" {
-  value = aws_iam_role.adot_collector.arn
+  policy_arn = "arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess"
+  role       = aws_iam_role.adot[0].name
 } 

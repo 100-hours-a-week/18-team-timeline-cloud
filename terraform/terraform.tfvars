@@ -71,6 +71,3 @@ applications_path    = "argocd/applications"
 # External-DNS 설정
 enable_external_dns = true
 domain_filters      = ["tam-nara.com"]
-
-# ADOT 설정
-enable_adot = true

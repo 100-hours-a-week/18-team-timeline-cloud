@@ -128,9 +128,6 @@ variable "environment" {
   description = "Environment name"
 }
 
-# ============================================================================
-
-
 variable "enable_prometheus_metrics" {
   description = "Enable Prometheus metrics collection"
   type        = bool
@@ -155,25 +152,29 @@ variable "prometheus_scrape_interval" {
   default     = "30s"
 }
 
-variable "enable_adot" {
-  description = "Enable AWS Distro for OpenTelemetry"
+# ADOT 설정
+variable "enable_cert_manager" {
+  description = "Enable cert-manager"
   type        = bool
   default     = false
 }
 
-variable "cluster_name" {
-  description = "EKS cluster name"
+variable "cert_manager_addon_version" {
+  description = "Version of the cert-manager add-on to use"
   type        = string
+  default     = "v1.16.2-eksbuild.1"  # 최신 안정 버전
 }
 
-variable "cluster_oidc_issuer" {
-  description = "The OIDC issuer URL for the cluster"
-  type        = string
+variable "enable_adot" {
+  description = "Enable AWS Distro for OpenTelemetry"
+  type        = bool
+  default     = true
 }
 
-variable "region" {
-  description = "AWS region"
+variable "addon_version" {
+  description = "Version of the ADOT add-on to use"
   type        = string
+  default     = "v0.117.0-eksbuild.1"  # 최신 안정 버전
 }
 
  

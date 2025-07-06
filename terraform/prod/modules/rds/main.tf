@@ -39,7 +39,7 @@ resource "aws_security_group" "rds" {
 }
 
 resource "aws_db_instance" "this" {
-  identifier              = "${var.project}-${var.environment}-rds"
+  identifier              = "${var.project}-prod-rds"
   instance_class          = var.db_instance_class
   
   # 스냅샷이 있으면 스냅샷에서 복원, 없으면 새로 생성

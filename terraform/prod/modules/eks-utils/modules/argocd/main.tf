@@ -24,7 +24,7 @@ resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = "5.51.4"  # ArgoCD 2.13.1 - stable version
+  version    = var.argocd_chart_version
   namespace  = kubernetes_namespace.argocd.metadata[0].name
 
   wait                        = true      # 설치 완료까지 대기
@@ -75,59 +75,59 @@ resource "helm_release" "argocd" {
 }
 
 # Data source to get ArgoCD server service
-data "kubernetes_service" "argocd_server" {
-  metadata {
-    name      = "argocd-server"
-    namespace = kubernetes_namespace.argocd.metadata[0].name
-  }
-  depends_on = [helm_release.argocd]
-}
+# data "kubernetes_service" "argocd_server" {
+#   metadata {
+#     name      = "argocd-server"
+#     namespace = kubernetes_namespace.argocd.metadata[0].name
+#   }
+#   depends_on = [helm_release.argocd]
+# }
 
 # Data source to get initial admin secret
-data "kubernetes_secret" "argocd_initial_admin_secret" {
-  metadata {
-    name      = "argocd-initial-admin-secret"
-    namespace = kubernetes_namespace.argocd.metadata[0].name
-  }
-  depends_on = [helm_release.argocd]
-}
+# data "kubernetes_secret" "argocd_initial_admin_secret" {
+#   metadata {
+#     name      = "argocd-initial-admin-secret"
+#     namespace = kubernetes_namespace.argocd.metadata[0].name
+#   }
+#   depends_on = [helm_release.argocd]
+# }
 
 # App of Apps - Root Application 자동 배포
-resource "kubernetes_manifest" "app_of_apps" {
-  count = var.enable_app_of_apps ? 1 : 0
+# resource "kubernetes_manifest" "app_of_apps" {
+#   count = var.enable_app_of_apps ? 1 : 0
   
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
-    metadata = {
-      name      = "app-of-apps"
-      namespace = kubernetes_namespace.argocd.metadata[0].name
-      labels = {
-        "app.kubernetes.io/name" = "app-of-apps"
-      }
-    }
-    spec = {
-      project = "default"
-      source = {
-        repoURL        = var.repo_url
-        targetRevision = var.target_revision
-        path           = var.applications_path
-      }
-      destination = {
-        server    = "https://kubernetes.default.svc"
-        namespace = kubernetes_namespace.argocd.metadata[0].name
-      }
-      syncPolicy = {
-        automated = {
-          prune    = true
-          selfHeal = true
-        }
-        syncOptions = [
-          "CreateNamespace=true"
-        ]
-      }
-    }
-  }
+#   manifest = {
+#     apiVersion = "argoproj.io/v1alpha1"
+#     kind       = "Application"
+#     metadata = {
+#       name      = "app-of-apps"
+#       namespace = kubernetes_namespace.argocd.metadata[0].name
+#       labels = {
+#         "app.kubernetes.io/name" = "app-of-apps"
+#       }
+#     }
+#     spec = {
+#       project = "default"
+#       source = {
+#         repoURL        = var.repo_url
+#         targetRevision = var.target_revision
+#         path           = var.applications_path
+#       }
+#       destination = {
+#         server    = "https://kubernetes.default.svc"
+#         namespace = kubernetes_namespace.argocd.metadata[0].name
+#       }
+#       syncPolicy = {
+#         automated = {
+#           prune    = true
+#           selfHeal = true
+#         }
+#         syncOptions = [
+#           "CreateNamespace=true"
+#         ]
+#       }
+#     }
+#   }
   
-  depends_on = [helm_release.argocd]
-} 
+#   depends_on = [helm_release.argocd]
+# } 

@@ -54,8 +54,6 @@ variable "az_a" {
   type        = string
 }
 
-
-
 variable "az_c" {
   description = "가용 영역 C"
   type        = string
@@ -93,8 +91,6 @@ variable "alb_idle_timeout" {
   description = "ALB의 idle timeout (초)"
   type        = number
 }
-
-
 
 variable "db_name" {
   description = "RDS DB 이름"
@@ -208,28 +204,6 @@ variable "domain_filters" {
   type        = list(string)
   default     = []
 }
-
-# ADOT 설정
-variable "enable_adot" {
-  description = "Enable AWS Distro for OpenTelemetry"
-  type        = bool
-  default     = false
-}
-
-# variable "dev_ami_id" {
-#   description = "AMI ID for dev EC2"
-#   type        = string
-# }
-
-# variable "dev_instance_type" {
-#   description = "Instance type for dev EC2"
-#   type        = string
-# }
-
-# variable "dev_key_pair_name" {
-#   description = "Key pair name for dev EC2"
-#   type        = string
-# }
 
 # Private IP 설정
 variable "front_private_ip" {

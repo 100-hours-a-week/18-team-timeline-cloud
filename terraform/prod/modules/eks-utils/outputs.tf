@@ -14,21 +14,21 @@ output "bastion_instance_id" {
 }
 
 # ArgoCD Outputs
-output "argocd_server_url" {
-  description = "ArgoCD server URL"
-  value       = var.enable_argocd ? module.argocd[0].argocd_server_url : null
-}
+# output "argocd_server_url" {
+#   description = "ArgoCD Server URL"
+#   value       = var.enable_argocd ? module.argocd[0].argocd_server_url : null
+# }
 
-output "argocd_initial_admin_password" {
-  description = "ArgoCD initial admin password"
-  value       = var.enable_argocd ? module.argocd[0].argocd_initial_admin_password : null
-  sensitive   = true
-}
+# output "argocd_initial_admin_password" {
+#   description = "Initial admin password"
+#   value       = var.enable_argocd ? module.argocd[0].argocd_initial_admin_password : null
+#   sensitive   = true
+# }
 
-output "argocd_admin_username" {
-  description = "ArgoCD admin username"
-  value       = var.enable_argocd ? module.argocd[0].argocd_admin_username : null
-}
+# output "argocd_namespace" {
+#   description = "The namespace where ArgoCD is installed"
+#   value       = var.enable_argocd ? module.argocd[0].argocd_namespace : null
+# }
 
 # External-DNS Outputs
 output "external_dns_iam_role_arn" {

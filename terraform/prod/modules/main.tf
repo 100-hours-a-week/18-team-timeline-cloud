@@ -49,7 +49,7 @@ module "eks" {
   vpc_cidr = var.vpc_cidr_block
   project = var.project
   environment = var.environment
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.32"
   region = "ap-northeast-2"
   
   tags = {
@@ -162,8 +162,13 @@ module "eks_utils" {
   target_revision         = var.target_revision
   applications_path       = var.applications_path
 
+  # cert-manager 설정
+  enable_cert_manager     = true
+  cert_manager_addon_version = var.cert_manager_addon_version
+  
   # ADOT 설정
-  enable_adot            = var.enable_adot
+  enable_adot             = true
+  addon_version           = var.addon_version
 
   # 공통 태그
   default_tags = {
