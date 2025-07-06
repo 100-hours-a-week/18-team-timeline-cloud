@@ -10,6 +10,8 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "HTTP"
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/actuator/health"
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8080"
+
+    external-dns.alpha.kubernetes.io/hostname: api.tam-nara.com
   labels:
     app: backend-external
 spec:
