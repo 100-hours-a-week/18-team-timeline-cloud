@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tamnara-backend-external
+  namespace: tamnara-prod
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "HTTP"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/actuator/health"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "9292"
+  labels:
+    app: backend-external
+spec:
+  selector:
+    app: backend
+  ports:
+  - name: swagger
+    port: 9292
+    targetPort: 9292
+    protocol: TCP
+  type: LoadBalancer 
