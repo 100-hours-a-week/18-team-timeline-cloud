@@ -66,7 +66,7 @@ spec:
           value: "otlp"
         # 수집된 데이터를 전송할 ADOT Collector 주소
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://adot-collector.opentelemetry-operator-system:4317"
+          value: "http://adot-collector:4317"
         # 자동 계측 대상 설정
         # 기본적으로 모든 계측을 비활성화하고
         - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
