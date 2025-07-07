@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,54 +26,54 @@ spec:
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group
       containers:
-      - name: backend
-        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-        # 백엔드 이미지의 기본 명령어 오버라이드 (메트릭 활성화)
-        command: ["/bin/sh"]
-        args:
-        - -c
-        - |
-          java \
-            -javaagent:/app/opentelemetry-javaagent.jar \
-            -Dotel.service.name=$OTEL_SERVICE_NAME \
-            -Dotel.exporter.otlp.endpoint=$OTEL_EXPORTER_OTLP_ENDPOINT \
-            -Dotel.metrics.exporter=otlp \
-            -Dotel.traces.exporter=otlp \
-            -Dspring.datasource.url="$DB_URL" \
-            -Dspring.datasource.username="$DB_USERNAME" \
-            -Dspring.datasource.password="$DB_PASSWORD" \
-            -Dmanagement.endpoints.web.exposure.include=prometheus,health,info \
-            -Duser.timezone=Asia/Seoul \
-            -Dspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \
-            -jar build/libs/backend-0.0.1-SNAPSHOT.jar
-        envFrom:
-        - configMapRef:
-            name: backend-config
-        - secretRef:
-            name: backend-secrets
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "768m"
-          limits:
-            memory: "1.5Gi"
-            cpu: "1500m"
-        # 헬스체크 설정
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 180
-          periodSeconds: 10
-                  readinessProbe:
+        - name: backend
+          image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          # 백엔드 이미지의 기본 명령어 오버라이드 (메트릭 활성화)
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - |
+              java \
+                -javaagent:/app/opentelemetry-javaagent.jar \
+                -Dotel.service.name=$OTEL_SERVICE_NAME \
+                -Dotel.exporter.otlp.endpoint=$OTEL_EXPORTER_OTLP_ENDPOINT \
+                -Dotel.metrics.exporter=otlp \
+                -Dotel.traces.exporter=otlp \
+                -Dspring.datasource.url="$DB_URL" \
+                -Dspring.datasource.username="$DB_USERNAME" \
+                -Dspring.datasource.password="$DB_PASSWORD" \
+                -Dmanagement.endpoints.web.exposure.include=prometheus,health,info \
+                -Duser.timezone=Asia/Seoul \
+                -Dspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \
+                -jar build/libs/backend-0.0.1-SNAPSHOT.jar
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secrets
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "768m"
+            limits:
+              memory: "1.5Gi"
+              cpu: "1500m"
+          # 헬스체크 설정
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 180
+            periodSeconds: 10
+          readinessProbe:
             httpGet:
               path: /health
               port: 8080
             initialDelaySeconds: 30
-            periodSeconds: 5 
+            periodSeconds: 5
       volumes:
-      - name: otel-agent
-        emptyDir: {} 
+        - name: otel-agent
+          emptyDir: {}
