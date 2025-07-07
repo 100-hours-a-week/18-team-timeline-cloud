@@ -4,6 +4,9 @@ metadata:
   name: frontend
   labels:
     app: frontend
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: frontend=346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest
+    argocd-image-updater.argoproj.io/write-back-method: git
 spec:
   replicas: 2
   selector:
@@ -39,6 +42,7 @@ spec:
       containers:
       - name: frontend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
