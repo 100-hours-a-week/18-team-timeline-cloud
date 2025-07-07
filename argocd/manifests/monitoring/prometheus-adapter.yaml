@@ -45,27 +45,27 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭
-    - seriesQuery: 'otel_http_server_requests_seconds_count{service_name="backend"}'
+    # HTTP 요청 속도 기반 메트릭 (실제 노출되는 메트릭 기반)
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{service="backend"}'
       resources:
         overrides:
-          service_name:
+          service:
             resource: service
       name:
-        matches: "otel_http_server_requests_seconds_count"
+        matches: "otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
-      metricsQuery: sum(rate(otel_http_server_requests_seconds_count{service_name="backend"}[1m])) by (service_name)
+      metricsQuery: sum(rate(otel_http_server_duration_milliseconds_count{service="backend"}[1m])) by (service)
     
-    # JVM 메모리 사용률 기반 메트릭
-    - seriesQuery: 'otel_jvm_memory_used_bytes{service_name="backend",area="heap"}'
+    # JVM 메모리 사용률 기반 메트릭 (실제 노출되는 메트릭 기반)
+    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{service="backend"}'
       resources:
         overrides:
-          service_name:
+          service:
             resource: service
       name:
-        matches: "otel_jvm_memory_used_bytes"
-        as: "jvm_memory_usage_percent"
-      metricsQuery: (otel_jvm_memory_used_bytes{service_name="backend",area="heap"} / otel_jvm_memory_max_bytes{service_name="backend",area="heap"}) * 100
+        matches: "otel_process_runtime_jvm_memory_committed_bytes"
+        as: "jvm_memory_committed_bytes"
+      metricsQuery: sum(otel_process_runtime_jvm_memory_committed_bytes{service="backend"}) by (service)
 
 ---
 apiVersion: apps/v1
@@ -88,8 +88,8 @@ spec:
       - name: prometheus-adapter
         image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.10.0
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 10001
+          runAsNonRoot: false
+          runAsUser: 0
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities:
@@ -101,11 +101,14 @@ spec:
         - --v=4
         - --secure-port=6443
         - --prometheus-url=http://adot-collector:8889
+        - --logtostderr=true
         ports:
         - containerPort: 6443
         volumeMounts:
         - name: config
           mountPath: /etc/adapter
+        - name: tmp-certs
+          mountPath: /tmp
         resources:
           requests:
             cpu: 50m
@@ -117,6 +120,8 @@ spec:
       - name: config
         configMap:
           name: prometheus-adapter-config
+      - name: tmp-certs
+        emptyDir: {}
 
 ---
 apiVersion: v1
