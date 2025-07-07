@@ -45,22 +45,27 @@ metadata:
 data:
   config.yaml: |
     rules:
-    - seriesQuery: 'http_server_active_requests{service="backend"}'
+    # HTTP 요청 속도 기반 메트릭
+    - seriesQuery: 'otel_http_server_requests_seconds_count{service_name="backend"}'
       resources:
         overrides:
-          service:
+          service_name:
             resource: service
       name:
-        matches: "http_server_active_requests"
-      metricsQuery: sum(http_server_active_requests{service="backend"})
-    - seriesQuery: 'http_server_duration_seconds_sum{service="backend"}'
+        matches: "otel_http_server_requests_seconds_count"
+        as: "http_requests_per_second"
+      metricsQuery: sum(rate(otel_http_server_requests_seconds_count{service_name="backend"}[1m])) by (service_name)
+    
+    # JVM 메모리 사용률 기반 메트릭
+    - seriesQuery: 'otel_jvm_memory_used_bytes{service_name="backend",area="heap"}'
       resources:
         overrides:
-          service:
+          service_name:
             resource: service
       name:
-        matches: "http_server_duration_seconds_sum"
-      metricsQuery: sum(rate(http_server_duration_seconds_sum{service="backend"}[5m])) / sum(rate(http_server_duration_seconds_count{service="backend"}[5m]))
+        matches: "otel_jvm_memory_used_bytes"
+        as: "jvm_memory_usage_percent"
+      metricsQuery: (otel_jvm_memory_used_bytes{service_name="backend",area="heap"} / otel_jvm_memory_max_bytes{service_name="backend",area="heap"}) * 100
 
 ---
 apiVersion: apps/v1
@@ -87,7 +92,7 @@ spec:
         - --metrics-relist-interval=30s
         - --v=4
         - --secure-port=6443
-        - --prometheus-url=http://tamnara-backend-service:9292/actuator/prometheus
+        - --prometheus-url=http://adot-collector-collector:8889
         ports:
         - containerPort: 6443
         volumeMounts:

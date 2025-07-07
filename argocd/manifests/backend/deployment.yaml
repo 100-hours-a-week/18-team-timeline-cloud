@@ -24,6 +24,17 @@ spec:
       serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group
+      initContainers:
+      - name: otel-agent-download
+        image: curlimages/curl:8.1.2
+        command:
+        - /bin/sh
+        - -c
+        - |
+          curl -L -o /opt/aws-opentelemetry-agent.jar https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar
+        volumeMounts:
+        - name: otel-agent
+          mountPath: /opt
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -39,6 +50,9 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
+        # ADOT Java Agent 활성화
+        - name: JAVA_TOOL_OPTIONS
+          value: "-javaagent:/opt/aws-opentelemetry-agent.jar"
         # Spring Boot Actuator 설정
         - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
           value: "health,info,metrics,prometheus"
@@ -55,9 +69,16 @@ spec:
           value: "http://adot-collector-collector:4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
           value: "service.name=backend"
+        - name: OTEL_METRICS_EXPORTER
+          value: "otlp"
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
         envFrom:
         - secretRef:
             name: backend-secrets
+        volumeMounts:
+        - name: otel-agent
+          mountPath: /opt
         resources:
           requests:
             memory: "1Gi"
@@ -72,9 +93,12 @@ spec:
             port: 8080
           initialDelaySeconds: 180
           periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 5 
+                  readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5 
+      volumes:
+      - name: otel-agent
+        emptyDir: {} 
