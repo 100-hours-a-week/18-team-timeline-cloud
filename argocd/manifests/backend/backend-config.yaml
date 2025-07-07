@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: tamnara-prod
+data:
+  # Application settings
+  NODE_ENV: "production"
+  PORT: "8080"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  
+  # Spring Boot Actuator settings
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: "always"
+  MANAGEMENT_ENDPOINTS_WEB_BASE_PATH: "/actuator"
+  MANAGEMENT_SECURITY_ENABLED: "false"
+  
+  # OpenTelemetry settings
+  OTEL_SERVICE_NAME: "backend"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://adot-collector:4317"
+  OTEL_RESOURCE_ATTRIBUTES: "service.name=backend" 

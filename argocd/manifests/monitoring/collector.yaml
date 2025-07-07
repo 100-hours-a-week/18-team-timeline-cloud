@@ -1,7 +1,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
-  name: adot-collector
+  name: adot
   namespace: tamnara-prod
 spec:
   mode: deployment

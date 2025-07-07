@@ -87,12 +87,20 @@ spec:
       containers:
       - name: prometheus-adapter
         image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.10.0
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 10001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
         args:
         - --config=/etc/adapter/config.yaml
         - --metrics-relist-interval=30s
         - --v=4
         - --secure-port=6443
-        - --prometheus-url=http://adot-collector-collector:8889
+        - --prometheus-url=http://adot-collector:8889
         ports:
         - containerPort: 6443
         volumeMounts:

@@ -24,61 +24,35 @@ spec:
       serviceAccountName: backend-service-account
       nodeSelector:
         eks.amazonaws.com/nodegroup: backend-node-group
-      initContainers:
-      - name: otel-agent-download
-        image: curlimages/curl:8.1.2
-        command:
-        - /bin/sh
-        - -c
-        - |
-          curl -L -o /opt/aws-opentelemetry-agent.jar https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar
-        volumeMounts:
-        - name: otel-agent
-          mountPath: /opt
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "8080"
-        - name: REDIS_HOST
-          value: "redis"
-        - name: REDIS_PORT
-          value: "6379"
-        # ADOT Java Agent 활성화
-        - name: JAVA_TOOL_OPTIONS
-          value: "-javaagent:/opt/aws-opentelemetry-agent.jar"
-        # Spring Boot Actuator 설정
-        - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
-          value: "health,info,metrics,prometheus"
-        - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
-          value: "always"
-        - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
-          value: "/actuator"
-        - name: MANAGEMENT_SECURITY_ENABLED
-          value: "false"
-        # OpenTelemetry 설정 (HPA 메트릭을 위해)
-        - name: OTEL_SERVICE_NAME
-          value: "backend"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://adot-collector-collector:4317"
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=backend"
-        - name: OTEL_METRICS_EXPORTER
-          value: "otlp"
-        - name: OTEL_TRACES_EXPORTER
-          value: "otlp"
+        # 백엔드 이미지의 기본 명령어 오버라이드 (메트릭 활성화)
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          java \
+            -javaagent:/app/opentelemetry-javaagent.jar \
+            -Dotel.service.name=$OTEL_SERVICE_NAME \
+            -Dotel.exporter.otlp.endpoint=$OTEL_EXPORTER_OTLP_ENDPOINT \
+            -Dotel.metrics.exporter=otlp \
+            -Dotel.traces.exporter=otlp \
+            -Dspring.datasource.url="$DB_URL" \
+            -Dspring.datasource.username="$DB_USERNAME" \
+            -Dspring.datasource.password="$DB_PASSWORD" \
+            -Dmanagement.endpoints.web.exposure.include=prometheus,health,info \
+            -Duser.timezone=Asia/Seoul \
+            -Dspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \
+            -jar build/libs/backend-0.0.1-SNAPSHOT.jar
         envFrom:
+        - configMapRef:
+            name: backend-config
         - secretRef:
             name: backend-secrets
-        volumeMounts:
-        - name: otel-agent
-          mountPath: /opt
         resources:
           requests:
             memory: "1Gi"
