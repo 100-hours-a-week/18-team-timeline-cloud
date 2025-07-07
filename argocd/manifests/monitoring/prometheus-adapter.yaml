@@ -71,7 +71,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭 (실제 노출되는 메트릭 기반)
+    # HTTP 요청 속도 기반 메트릭
     - seriesQuery: 'otel_http_server_duration_milliseconds_count{service="backend"}'
       resources:
         overrides:
@@ -82,7 +82,7 @@ data:
         as: "http_requests_per_second"
       metricsQuery: sum(rate(otel_http_server_duration_milliseconds_count{service="backend"}[1m])) by (service)
     
-    # JVM 메모리 사용률 기반 메트릭 (실제 노출되는 메트릭 기반)
+    # JVM 메모리 사용률 기반 메트릭
     - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{service="backend"}'
       resources:
         overrides:
@@ -126,7 +126,7 @@ spec:
         - --metrics-relist-interval=30s
         - --v=4
         - --secure-port=6443
-        - --prometheus-url=http://adot-collector:8889
+        - --prometheus-url=http://prometheus-kube-prometheus-prometheus.tamnara-prod.svc.cluster.local:9090
         - --logtostderr=true
         ports:
         - containerPort: 6443
