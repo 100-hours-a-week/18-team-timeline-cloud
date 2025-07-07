@@ -1,0 +1,40 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: adot-collector
+  namespace: tamnara-prod
+spec:
+  mode: deployment
+  serviceAccount: adot-collector
+  replicas: 1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+    
+    processors:
+      batch:
+    
+    exporters:
+      debug:
+    
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug]
+      telemetry:
+        logs:
+          level: info
+        metrics:
+          address: 0.0.0.0:8888 

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  namespace: tamnara-prod
   labels:
     app: backend
   annotations:
@@ -16,10 +17,16 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        # Prometheus 메트릭 수집을 위한 설정
+        # Spring Actuator가 이 경로로 메트릭을 노출
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
     spec:
       serviceAccountName: backend-service-account
       nodeSelector:
-        eks.amazonaws.com/nodegroup: backend-node-group 
+        eks.amazonaws.com/nodegroup: backend-node-group
       containers:
       - name: backend
         image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
@@ -35,11 +42,25 @@ spec:
           value: "redis"
         - name: REDIS_PORT
           value: "6379"
+        # Spring Boot Actuator 설정
+        - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+          value: "health,info,metrics,prometheus"
+        - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
+          value: "always"
+        - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
+          value: "/actuator"
+        - name: MANAGEMENT_SECURITY_ENABLED
+          value: "false"
+        # OpenTelemetry 설정 (HPA 메트릭을 위해)
+        - name: OTEL_SERVICE_NAME
+          value: "backend"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://adot-collector-collector:4317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=backend"
         envFrom:
         - secretRef:
             name: backend-secrets
-        - secretRef:
-            name: backend-environments ## 나중에 제거
         resources:
           requests:
             memory: "1Gi"
