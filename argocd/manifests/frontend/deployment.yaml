@@ -38,7 +38,7 @@ spec:
           value: "3"
       containers:
       - name: frontend
-        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest
+        image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/fe:latest # Image Updater가 자동으로 업데이트
         imagePullPolicy: Always
         ports:
         - containerPort: 80

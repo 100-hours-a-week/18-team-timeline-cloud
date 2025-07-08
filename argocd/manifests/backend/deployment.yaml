@@ -24,7 +24,7 @@ spec:
         eks.amazonaws.com/nodegroup: backend-node-group
       containers:
         - name: backend
-          image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest
+          image: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be:latest # Image Updater가 자동으로 업데이트
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
