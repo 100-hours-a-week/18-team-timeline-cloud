@@ -71,21 +71,21 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭 (service 레이블 매핑)
+    # HTTP 요청 속도 기반 메트릭 (deployment 기반)
     - seriesQuery: 'otel_http_server_duration_milliseconds_count{service="backend"}'
       resources:
         overrides:
-          service: {resource: "service"}
+          service: {resource: "deployment"}
       name:
         matches: "otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
       metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
     
-    # JVM 메모리 사용률 기반 메트릭 (service 레이블 매핑)
+    # JVM 메모리 사용률 기반 메트릭 (deployment 기반)
     - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{service="backend"}'
       resources:
         overrides:
-          service: {resource: "service"}
+          service: {resource: "deployment"}
       name:
         matches: "otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
