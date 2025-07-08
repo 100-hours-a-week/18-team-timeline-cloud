@@ -71,23 +71,23 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭
+    # HTTP 요청 속도 기반 메트릭 (표준 방법)
     - seriesQuery: 'otel_http_server_duration_milliseconds_count{service="backend"}'
       resources:
         template: "<<.Resource>>"
       name:
         matches: "otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
-      metricsQuery: sum(rate(otel_http_server_duration_milliseconds_count{service="backend"}[1m]))
+      metricsQuery: 'rate(<<.Series>>[2m])'
     
-    # JVM 메모리 사용률 기반 메트릭
+    # JVM 메모리 사용률 기반 메트릭 (표준 방법)
     - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{service="backend"}'
       resources:
         template: "<<.Resource>>"
       name:
         matches: "otel_process_runtime_jvm_memory_committed_bytes"
-        as: "jvm_memory_committed_bytes"
-      metricsQuery: sum(otel_process_runtime_jvm_memory_committed_bytes{service="backend"})
+        as: "jvm_memory_bytes"
+      metricsQuery: '<<.Series>>'
 
 ---
 apiVersion: apps/v1
