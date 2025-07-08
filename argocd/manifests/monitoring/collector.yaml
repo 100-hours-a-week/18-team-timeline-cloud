@@ -31,13 +31,18 @@ spec:
         namespace: "otel"
         const_labels:
           service: "backend"
+      # SigNoz exporter for traces
+      otlp/signoz:
+        endpoint: "http://signoz.tam-nara.com:4317"
+        tls:
+          insecure: true
     
     service:
       pipelines:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug]
+          exporters: [debug, otlp/signoz]  # SigNoz로 트레이스 전송
         metrics:
           receivers: [otlp]
           processors: [batch]

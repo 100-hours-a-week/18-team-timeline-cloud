@@ -16,11 +16,8 @@ spec:
       labels:
         app: backend
       annotations:
-        # Prometheus 메트릭 수집을 위한 설정
-        # Spring Actuator가 이 경로로 메트릭을 노출
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/actuator/prometheus"
-        prometheus.io/port: "8080"
+        # 메트릭은 OTEL Java Agent를 통해 ADOT Collector로 전송됨
+        # 프로메테우스 직접 scrape는 인증 문제로 사용하지 않음
     spec:
       serviceAccountName: backend-service-account
       nodeSelector:
