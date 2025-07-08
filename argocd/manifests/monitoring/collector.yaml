@@ -30,7 +30,7 @@ spec:
         endpoint: "0.0.0.0:8889"
         namespace: "otel"
         const_labels:
-          service: "backend"
+          service: "tamnara-backend-service"
       # SigNoz exporter for traces
       otlp/signoz:
         endpoint: "http://signoz.tam-nara.com:4317"

@@ -17,6 +17,6 @@ data:
   MANAGEMENT_SECURITY_ENABLED: "false"
   
   # OpenTelemetry settings
-  OTEL_SERVICE_NAME: "backend"
+  OTEL_SERVICE_NAME: "tamnara-backend-service"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://adot-collector:4317"
-  OTEL_RESOURCE_ATTRIBUTES: "service.name=backend" 
+  OTEL_RESOURCE_ATTRIBUTES: "service.name=tamnara-backend-service" 
