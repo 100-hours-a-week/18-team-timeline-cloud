@@ -3,10 +3,6 @@ kind: Application
 metadata:
   name: prometheus
   namespace: argocd
-  annotations:
-    # Prometheus Operator가 관리하는 리소스들과의 충돌 방지
-    argocd.argoproj.io/sync-options: IgnoreExtraneous
-    argocd.argoproj.io/compare-options: IgnoreAggregatedRoles
 spec:
   project: default
   source:
@@ -16,43 +12,15 @@ spec:
     helm:
       releaseName: prometheus
       values: |
-        # kube-prometheus-stack Values
-        
-        # Global Settings
-        global:
-          rbac:
-            create: true
-            pspEnabled: false  # K8s 1.25+ compatibility
-        
-        # Prometheus Server Configuration
+        # Grafana 비활성화 (기존 Grafana 사용)
+        grafana:
+          enabled: false
+          
+        # 기본 Prometheus 설정
         prometheus:
           prometheusSpec:
-            # Resource Settings
-            resources:
-              limits:
-                cpu: 500m
-                memory: 2Gi
-              requests:
-                cpu: 100m
-                memory: 512Mi
-            
-            # Storage Configuration
             retention: 15d
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  storageClassName: gp2
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 10Gi
-            
-            # Service Monitor Selector
-            serviceMonitorSelectorNilUsesHelmValues: false
-            podMonitorSelectorNilUsesHelmValues: false
-            ruleSelectorNilUsesHelmValues: false
-            
-            # Additional Scrape Configs for ADOT Collector only
+            # ADOT Collector 메트릭 수집
             additionalScrapeConfigs:
               - job_name: 'adot-collector'
                 static_configs:
@@ -60,104 +28,18 @@ spec:
                 scrape_interval: 15s
                 metrics_path: '/metrics'
                 honor_labels: true
-        
-        # Grafana Configuration - 기존 Grafana 사용으로 비활성화
-        grafana:
-          enabled: false
-        
-        # Alertmanager Configuration
+            
+        # 기본 Alertmanager 설정
         alertmanager:
           enabled: true
-          alertmanagerSpec:
-            resources:
-              limits:
-                cpu: 200m
-                memory: 256Mi
-              requests:
-                cpu: 100m
-                memory: 128Mi
-            storage:
-              volumeClaimTemplate:
-                spec:
-                  storageClassName: gp2
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 2Gi
-        
-        # Node Exporter Configuration
+          
+        # 기본 Node Exporter 설정
         nodeExporter:
           enabled: true
-          resources:
-            limits:
-              cpu: 200m
-              memory: 180Mi
-            requests:
-              cpu: 100m
-              memory: 30Mi
-        
-        # Kube State Metrics Configuration
+          
+        # 기본 Kube State Metrics 설정
         kubeStateMetrics:
           enabled: true
-          resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 10m
-              memory: 32Mi
-        
-        # Prometheus Operator Configuration
-        prometheusOperator:
-          enabled: true
-          resources:
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-        
-        # Disable components we don't need
-        coreDns:
-          enabled: false
-        kubeEtcd:
-          enabled: false
-        kubeControllerManager:
-          enabled: false
-        kubeScheduler:
-          enabled: false
-        kubeProxy:
-          enabled: false
-        
-        # Default rules
-        defaultRules:
-          create: true
-          rules:
-            alertmanager: true
-            etcd: false
-            configReloaders: true
-            general: true
-            k8s: true
-            kubeApiserver: true
-            kubeApiserverAvailability: true
-            kubeApiserverSlos: true
-            kubelet: true
-            kubeProxy: false
-            kubePrometheusGeneral: true
-            kubePrometheusNodeRecording: true
-            kubernetesApps: true
-            kubernetesResources: true
-            kubernetesStorage: true
-            kubernetesSystem: true
-            kubeScheduler: false
-            kubeStateMetrics: true
-            network: true
-            node: true
-            nodeExporterAlerting: true
-            nodeExporterRecording: true
-            prometheus: true
-            prometheusOperator: true
   destination:
     server: https://kubernetes.default.svc
     namespace: tamnara-prod
@@ -167,6 +49,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
-      - Replace=true
-      - RespectIgnoreDifferences=true 
+      - ServerSideApply=true 
