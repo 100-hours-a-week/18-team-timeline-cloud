@@ -49,4 +49,27 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true 
+      - ServerSideApply=true
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      name: prometheus-kube-prometheus-admission
+      jsonPointers:
+        - /webhooks
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: prometheus-kube-prometheus-admission
+      jsonPointers:
+        - /webhooks
+    - group: apps
+      kind: DaemonSet
+      name: prometheus-prometheus-node-exporter
+      jsonPointers:
+        - /spec/template/spec/containers/0/resources
+        - /status
+    - group: apps
+      kind: Deployment
+      name: prometheus-kube-state-metrics
+      jsonPointers:
+        - /spec/template/spec/containers/0/resources
+        - /status 
