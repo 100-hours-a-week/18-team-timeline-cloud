@@ -169,4 +169,4 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - Replace=true
-      - ApplyOutOfSyncOnly=true 
+      - RespectIgnoreDifferences=true 
