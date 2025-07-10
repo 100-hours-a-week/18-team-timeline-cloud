@@ -70,15 +70,15 @@ metadata:
   namespace: tamnara-prod
 data:
   config.yaml: |
-    rules:
-    # HTTP 요청 속도 메트릭 (완전 하드코딩)
+    externalRules:
+    # HTTP 요청 속도 메트릭 (External Metrics 방식)
     - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}'
       name:
         matches: "^otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
       metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}[2m]))'
     
-    # JVM 메모리 메트릭 (완전 하드코딩)  
+    # JVM 메모리 메트릭 (External Metrics 방식)
     - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"}'
       name:
         matches: "^otel_process_runtime_jvm_memory_committed_bytes"
