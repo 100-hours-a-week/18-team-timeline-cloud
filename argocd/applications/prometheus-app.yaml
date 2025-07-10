@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: prometheus
   namespace: argocd
+  annotations:
+    # Prometheus Operator가 관리하는 리소스들과의 충돌 방지
+    argocd.argoproj.io/sync-options: IgnoreExtraneous
+    argocd.argoproj.io/compare-options: IgnoreAggregatedRoles
 spec:
   project: default
   source:
@@ -163,4 +167,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true 
+      - ServerSideApply=true
+      - Replace=true
+      - ApplyOutOfSyncOnly=true 
