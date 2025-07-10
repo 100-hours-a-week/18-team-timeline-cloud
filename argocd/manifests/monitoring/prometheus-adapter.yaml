@@ -71,23 +71,21 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 메트릭 (k8s 라벨 사용)
-    - seriesQuery: 'otel_http_server_duration_milliseconds_count'
+    # HTTP 요청 속도 메트릭 (job 라벨 사용)
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{job="backend"}'
       resources:
         overrides:
-          k8s_pod_name: {resource: "pod"}
-          k8s_namespace_name: {resource: "namespace"}
+          job: {resource: "service"}
       name:
         matches: "^otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
       metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
     
-    # JVM 메모리 메트릭 (k8s 라벨 사용)  
-    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes'
+    # JVM 메모리 메트릭 (job 라벨 사용)  
+    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{job="backend"}'
       resources:
         overrides:
-          k8s_pod_name: {resource: "pod"}
-          k8s_namespace_name: {resource: "namespace"}
+          job: {resource: "service"}
       name:
         matches: "^otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
