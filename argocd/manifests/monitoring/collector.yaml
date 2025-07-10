@@ -1,8 +1,12 @@
-apiVersion: opentelemetry.io/v1alpha1
+apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: adot
   namespace: tamnara-prod
+  annotations:
+    # ArgoCD에서 Operator가 관리하는 필드들 무시
+    argocd.argoproj.io/sync-options: IgnoreExtraneous
+    argocd.argoproj.io/compare-options: IgnoreAggregatedRoles
 spec:
   mode: deployment
   serviceAccount: adot-collector
@@ -14,7 +18,7 @@ spec:
     requests:
       cpu: 50m
       memory: 64Mi
-  config: |
+  config:
     receivers:
       otlp:
         protocols:
