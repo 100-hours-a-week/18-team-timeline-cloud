@@ -71,25 +71,19 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 메트릭 (job 라벨 사용)
-    - seriesQuery: 'otel_http_server_duration_milliseconds_count{job="backend"}'
-      resources:
-        overrides:
-          job: {resource: "service"}
+    # HTTP 요청 속도 메트릭 (완전 하드코딩)
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}'
       name:
         matches: "^otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
-      metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
+      metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}[2m]))'
     
-    # JVM 메모리 메트릭 (job 라벨 사용)  
-    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{job="backend"}'
-      resources:
-        overrides:
-          job: {resource: "service"}
+    # JVM 메모리 메트릭 (완전 하드코딩)  
+    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"}'
       name:
         matches: "^otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
-      metricsQuery: 'avg(otel_process_runtime_jvm_memory_committed_bytes{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+      metricsQuery: 'avg(otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"})'
 
 ---
 apiVersion: apps/v1
