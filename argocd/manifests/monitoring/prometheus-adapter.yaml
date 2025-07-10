@@ -28,6 +28,13 @@ rules:
   - "*"
   verbs:
   - "*"
+# External Metrics API 권한
+- apiGroups:
+  - external.metrics.k8s.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
 # 권한 검증을 위한 권한
 - apiGroups:
   - authorization.k8s.io
@@ -100,6 +107,7 @@ spec:
     metadata:
       labels:
         name: prometheus-adapter
+        app: prometheus-adapter
     spec:
       serviceAccountName: prometheus-adapter
       containers:
@@ -116,9 +124,10 @@ spec:
         args:
         - --config=/etc/adapter/config.yaml
         - --metrics-relist-interval=30s
-        - --v=2
+        - --v=4
         - --secure-port=6443
         - --prometheus-url=http://prometheus-kube-prometheus-prometheus.tamnara-prod.svc.cluster.local:9090
+        - --enable-external-metrics=true
         ports:
         - containerPort: 6443
           name: https
@@ -165,6 +174,21 @@ spec:
     name: prometheus-adapter
     namespace: tamnara-prod
   group: custom.metrics.k8s.io
+  version: v1beta1
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 100
+  versionPriority: 100
+
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.external.metrics.k8s.io
+spec:
+  service:
+    name: prometheus-adapter
+    namespace: tamnara-prod
+  group: external.metrics.k8s.io
   version: v1beta1
   insecureSkipTLSVerify: true
   groupPriorityMinimum: 100
