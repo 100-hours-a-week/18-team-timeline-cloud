@@ -120,41 +120,24 @@ spec:
       serviceAccountName: prometheus-adapter
       containers:
       - name: prometheus-adapter
-        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.11.2
+        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.10.0
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 10001
+          runAsNonRoot: false
+          runAsUser: 0
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: false
           capabilities:
             drop:
             - ALL
         args:
         - --config=/etc/adapter/config.yaml
         - --metrics-relist-interval=30s
-        - --v=4
+        - --v=2
         - --secure-port=6443
         - --prometheus-url=http://prometheus-kube-prometheus-prometheus.tamnara-prod.svc.cluster.local:9090
-        - --logtostderr=true
-        - --tls-cert-file=/tmp/tls.crt
-        - --tls-private-key-file=/tmp/tls.key
         ports:
         - containerPort: 6443
           name: https
-        livenessProbe:
-          httpGet:
-            path: /livez
-            port: https
-            scheme: HTTPS
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /readyz
-            port: https
-            scheme: HTTPS
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
         volumeMounts:
         - name: config
           mountPath: /etc/adapter
