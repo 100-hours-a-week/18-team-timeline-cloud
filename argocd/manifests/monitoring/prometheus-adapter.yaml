@@ -72,24 +72,46 @@ data:
   config.yaml: |
     rules:
     # HTTP 요청 속도 기반 메트릭 (namespace 기반)
-    - seriesQuery: 'otel_http_server_duration_milliseconds_count{service="tamnara-backend-service"}'
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace!="",service!=""}'
       resources:
         overrides:
           namespace: {resource: "namespace"}
+          service: {resource: "service"}
       name:
         matches: "otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
       metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
     
+    # HTTP 요청 속도 기반 메트릭 (pod 기반) - kube-state-metrics에서 service->pod 매핑 활용
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace!="",service!=""}'
+      resources:
+        template: <<.Resource>>
+      name:
+        matches: "otel_http_server_duration_milliseconds_count"
+        as: "http_requests_per_second_pods"
+      metricsQuery: 'sum(rate(<<.Series>>{namespace="<<.Namespace>>",service="<<.Service>>"}[2m]))'
+      
     # JVM 메모리 사용률 기반 메트릭 (namespace 기반)
-    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{service="tamnara-backend-service"}'
+    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace!="",service!=""}'
       resources:
         overrides:
           namespace: {resource: "namespace"}
+          service: {resource: "service"}
       name:
         matches: "otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
       metricsQuery: 'sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+
+    # CPU 사용률 기반 메트릭 (namespace 기반)
+    - seriesQuery: 'otel_process_cpu_usage{namespace!="",service!=""}'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          service: {resource: "service"}
+      name:
+        matches: "otel_process_cpu_usage"
+        as: "cpu_usage_ratio"
+      metricsQuery: 'avg(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
 
 ---
 apiVersion: apps/v1
@@ -110,24 +132,41 @@ spec:
       serviceAccountName: prometheus-adapter
       containers:
       - name: prometheus-adapter
-        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.10.0
+        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.11.2
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsNonRoot: true
+          runAsUser: 10001
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
           capabilities:
             drop:
             - ALL
         args:
         - --config=/etc/adapter/config.yaml
         - --metrics-relist-interval=30s
-        - --v=4
+        - --v=2
         - --secure-port=6443
         - --prometheus-url=http://prometheus-kube-prometheus-prometheus.tamnara-prod.svc.cluster.local:9090
         - --logtostderr=true
+        - --tls-cert-file=/tmp/tls.crt
+        - --tls-private-key-file=/tmp/tls.key
         ports:
         - containerPort: 6443
+          name: https
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: https
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: https
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
         volumeMounts:
         - name: config
           mountPath: /etc/adapter
@@ -135,11 +174,11 @@ spec:
           mountPath: /tmp
         resources:
           requests:
-            cpu: 50m
-            memory: 64Mi
-          limits:
             cpu: 100m
             memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
       volumes:
       - name: config
         configMap:
@@ -157,6 +196,7 @@ spec:
   ports:
   - port: 443
     targetPort: 6443
+    name: https
   selector:
     name: prometheus-adapter
 
