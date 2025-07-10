@@ -35,6 +35,7 @@ spec:
         namespace: "otel"
         const_labels:
           service: "tamnara-backend-service"
+          namespace: "tamnara-prod"
       # SigNoz exporter for traces
       otlp/signoz:
         endpoint: "http://signoz.tam-nara.com:4317"
