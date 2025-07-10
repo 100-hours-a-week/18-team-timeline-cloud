@@ -71,35 +71,25 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭 (namespace 레벨)
-    - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace!=""}'
+    # HTTP 요청 속도 기반 메트릭 (단순한 namespace 기반)
+    - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}'
       resources:
         overrides:
           namespace: {resource: "namespace"}
       name:
         matches: "otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
-      metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
+      metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}[2m]))'
     
-    # JVM 메모리 사용률 기반 메트릭 (namespace 레벨)
-    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace!=""}'
+    # JVM 메모리 사용률 기반 메트릭 (단순한 namespace 기반)
+    - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"}'
       resources:
         overrides:
           namespace: {resource: "namespace"}
       name:
         matches: "otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
-      metricsQuery: 'avg(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
-
-    # CPU 사용률 기반 메트릭 (namespace 레벨)
-    - seriesQuery: 'otel_process_cpu_usage{namespace!=""}'
-      resources:
-        overrides:
-          namespace: {resource: "namespace"}
-      name:
-        matches: "otel_process_cpu_usage"
-        as: "cpu_usage_ratio"
-      metricsQuery: 'avg(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+      metricsQuery: 'avg(otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"})'
 
 ---
 apiVersion: apps/v1
