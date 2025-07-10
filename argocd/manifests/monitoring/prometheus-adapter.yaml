@@ -71,23 +71,17 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # HTTP 요청 속도 기반 메트릭 (단순한 namespace 기반)
+    # HTTP 요청 속도 메트릭 (완전 하드코딩)
     - seriesQuery: 'otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}'
-      resources:
-        overrides:
-          namespace: {resource: "namespace"}
       name:
-        matches: "otel_http_server_duration_milliseconds_count"
+        matches: "^otel_http_server_duration_milliseconds_count"
         as: "http_requests_per_second"
       metricsQuery: 'sum(rate(otel_http_server_duration_milliseconds_count{namespace="tamnara-prod"}[2m]))'
     
-    # JVM 메모리 사용률 기반 메트릭 (단순한 namespace 기반)
+    # JVM 메모리 메트릭 (완전 하드코딩)  
     - seriesQuery: 'otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"}'
-      resources:
-        overrides:
-          namespace: {resource: "namespace"}
       name:
-        matches: "otel_process_runtime_jvm_memory_committed_bytes"
+        matches: "^otel_process_runtime_jvm_memory_committed_bytes"
         as: "jvm_memory_bytes"
       metricsQuery: 'avg(otel_process_runtime_jvm_memory_committed_bytes{namespace="tamnara-prod"})'
 
@@ -110,7 +104,7 @@ spec:
       serviceAccountName: prometheus-adapter
       containers:
       - name: prometheus-adapter
-        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.10.0
+        image: registry.k8s.io/prometheus-adapter/prometheus-adapter:v0.12.0
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
