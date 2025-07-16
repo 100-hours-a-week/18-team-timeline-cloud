@@ -70,11 +70,7 @@ spec:
         - name: argocd-image-updater
           image: quay.io/argoprojlabs/argocd-image-updater:v0.16.0
           args:
-            - --configmap-name=argocd-image-updater-config
-            - --namespace=argocd
-            - --interval=2m
-            - --once=false
-            - --loglevel=info
+            - run
           env:
             - name: ARGOCD_SERVER
               value: "argocd-server.argocd.svc.cluster.local:80"
@@ -82,10 +78,8 @@ spec:
               value: "true"
             - name: ARGOCD_GRPC_WEB
               value: "true"
-            - name: ARGOCD_GRPC_WEB_ROOT_PATH
-              value: "/"
-            - name: ARGOCD_AUTH_MODE
-              value: "serviceaccount"
+            - name: IMAGE_UPDATER_LOGLEVEL
+              value: "info"
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
