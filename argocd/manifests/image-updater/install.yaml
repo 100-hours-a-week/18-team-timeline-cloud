@@ -51,7 +51,7 @@ data:
         credsexpire: 11h
   ecr-creds.sh: |
     #!/bin/sh
-    TOKEN=$(timeout 8s aws ecr get-login-password --region ap-northeast-2 2>/dev/null)
+    TOKEN=$(timeout 30s aws ecr get-login-password --region ap-northeast-2 2>/dev/null)
     if [ $? -eq 0 ] && [ ! -z "$TOKEN" ]; then
       echo "AWS:$TOKEN"
     else
