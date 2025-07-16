@@ -131,6 +131,7 @@ module "argocd" {
     helm = helm
   }
 
+  cluster_name = var.cluster_name
   argocd_chart_version = var.argocd_chart_version
   enable_app_of_apps = var.enable_app_of_apps
   repo_url = var.repo_url

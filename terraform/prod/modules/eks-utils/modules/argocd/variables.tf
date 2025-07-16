@@ -26,4 +26,9 @@ variable "applications_path" {
   description = "Path in git repo where ArgoCD applications are stored"
   type        = string
   default     = "argocd/applications"
+}
+
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
 } 

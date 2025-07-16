@@ -130,4 +130,61 @@ resource "kubernetes_manifest" "app_of_apps" {
   }
   
   depends_on = [helm_release.argocd]
+}
+
+# 기존 EKS 클러스터 정보 참조
+data "aws_eks_cluster" "existing" {
+  name = var.cluster_name
+}
+
+# 기존 OIDC provider 정보 참조
+data "aws_iam_openid_connect_provider" "existing" {
+  url = data.aws_eks_cluster.existing.identity[0].oidc[0].issuer
+}
+
+# ArgoCD Image Updater용 ECR 접근 IAM Role
+resource "aws_iam_role" "argocd_image_updater_ecr" {
+  name = "${var.cluster_name}-argocd-image-updater-ecr-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = data.aws_iam_openid_connect_provider.existing.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${replace(data.aws_iam_openid_connect_provider.existing.url, "https://", "")}:sub" = "system:serviceaccount:argocd:argocd-image-updater"
+            "${replace(data.aws_iam_openid_connect_provider.existing.url, "https://", "")}:aud" = "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+
+  inline_policy {
+    name = "ECRAccess"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = [
+            "ecr:GetAuthorizationToken",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:GetRepositoryPolicy",
+            "ecr:DescribeRepositories",
+            "ecr:ListImages",
+            "ecr:DescribeImages",
+            "ecr:BatchGetImage"
+          ]
+          Resource = "*"
+        }
+      ]
+    })
+  }
 } 
