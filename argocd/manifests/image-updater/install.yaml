@@ -46,7 +46,6 @@ data:
       - name: ECR
         api_url: https://346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
         prefix: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
-        credentials: ext:/bin/sh -c 'aws ecr get-login-password --region ap-northeast-2'
         default: true
 ---
 # Deployment
