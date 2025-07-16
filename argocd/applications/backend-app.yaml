@@ -8,7 +8,7 @@ metadata:
   annotations:
     # ArgoCD Image Updater 설정
     argocd-image-updater.argoproj.io/image-list: backend=346011888304.dkr.ecr.ap-northeast-2.amazonaws.com/tamnara/be
-    argocd-image-updater.argoproj.io/backend.update-strategy: latest
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
     argocd-image-updater.argoproj.io/write-back-method: argocd
 spec:
   project: default
@@ -16,6 +16,7 @@ spec:
     repoURL: https://github.com/100-hours-a-week/18-team-timeline-cloud.git
     targetRevision: main
     path: argocd/manifests/backend
+    kustomize: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: tamnara-prod
