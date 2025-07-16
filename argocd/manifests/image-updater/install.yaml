@@ -68,7 +68,7 @@ spec:
       serviceAccountName: argocd-image-updater
       containers:
         - name: argocd-image-updater
-          image: quay.io/argoproj/argocd-image-updater:v0.15.2
+          image: quay.io/argoprojlabs/argocd-image-updater:v0.16.0
           args:
             - --configmap-name=argocd-image-updater-config
             - --namespace=argocd
