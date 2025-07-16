@@ -47,7 +47,7 @@ data:
       - name: ECR
         api_url: https://346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
         prefix: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
-        credentials: ext:/usr/local/bin/ecr-creds.sh
+        credentials: ext:/scripts/ecr-creds.sh
         credsexpire: 11h
   ecr-creds.sh: |
     #!/bin/sh
@@ -107,7 +107,7 @@ spec:
             - name: config-volume
               mountPath: /app/config
             - name: script-volume
-              mountPath: /usr/local/bin
+              mountPath: /scripts
           resources:
             requests:
               memory: "64Mi"
