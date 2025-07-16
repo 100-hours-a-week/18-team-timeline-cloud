@@ -42,6 +42,17 @@ metadata:
   namespace: argocd
 data:
   log.level: debug
+  registries.conf: |
+    registries:
+      - name: ECR
+        api_url: https://346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
+        prefix: 346011888304.dkr.ecr.ap-northeast-2.amazonaws.com
+        credentials: ext:/usr/local/bin/ecr-creds.sh
+        credsexpire: 11h
+  ecr-creds.sh: |
+    #!/bin/sh
+    TOKEN=$(aws ecr get-login-password --region ap-northeast-2)
+    echo "AWS:$TOKEN"
 ---
 # Deployment
 apiVersion: apps/v1
@@ -62,6 +73,20 @@ spec:
         app.kubernetes.io/name: argocd-image-updater
     spec:
       serviceAccountName: argocd-image-updater
+      initContainers:
+        - name: setup-ecr-script
+          image: busybox:1.35
+          command:
+            - sh
+            - -c
+            - |
+              cp /config/ecr-creds.sh /scripts/ecr-creds.sh
+              chmod +x /scripts/ecr-creds.sh
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: script-volume
+              mountPath: /scripts
       containers:
         - name: argocd-image-updater
           image: quay.io/argoprojlabs/argocd-image-updater:v0.16.0
@@ -81,6 +106,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
+            - name: script-volume
+              mountPath: /usr/local/bin
           resources:
             requests:
               memory: "64Mi"
@@ -91,4 +118,6 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: argocd-image-updater-config 
+            name: argocd-image-updater-config
+        - name: script-volume
+          emptyDir: {} 
