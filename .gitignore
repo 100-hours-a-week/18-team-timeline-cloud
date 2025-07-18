@@ -4,3 +4,4 @@ terraform.zip
 terraform.tfvars
 .env
 errored.tfstate
+.cursorrules
