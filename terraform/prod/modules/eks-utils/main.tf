@@ -155,3 +155,23 @@ module "adot" {
 
   depends_on = [module.aws_auth]
 } 
+
+# Cluster Autoscaler
+module "cluster_autoscaler" {
+  source = "./modules/cluster-autoscaler"
+  
+  count = var.enable_cluster_autoscaler ? 1 : 0
+  
+  providers = {
+    kubernetes = kubernetes
+    helm = helm
+    aws = aws
+  }
+
+  cluster_name = var.cluster_name
+  cluster_oidc_issuer = local.oidc_provider
+  region = var.region
+  default_tags = var.default_tags
+  
+  depends_on = [module.aws_auth]
+} 

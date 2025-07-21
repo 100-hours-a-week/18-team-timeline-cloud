@@ -151,6 +151,9 @@ module "eks_utils" {
   enable_external_dns     = var.enable_external_dns
   domain_filters          = var.domain_filters
 
+  # Cluster Autoscaler 설정
+  enable_cluster_autoscaler = true
+
   # ArgoCD 설정 
   enable_argocd           = var.enable_argocd
   argocd_safe_destroy     = var.argocd_safe_destroy
