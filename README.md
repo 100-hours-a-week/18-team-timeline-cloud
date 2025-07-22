@@ -6,6 +6,8 @@
 
 [탐나라 바로가기](www.tam-nara.com)
 
+<img width="2866" height="1773" alt="프로젝트 들어갈 전체 예시 이미지" src="https://github.com/user-attachments/assets/58908680-8de3-416c-84d0-cd9c204bd802" />
+
 - 프로젝트 이름: 탐나라
 - 프로젝트 설명: 뉴스 기사 및 데이터를 AI가 분석하여, 특정 이슈의 흐름과 변화를 시간 순대로(타임라인 형태) 요약 및 재구성하여 제공하는 웹 서비스
 - 주요 기술 스택: AWS, Terraform, SigNoz, Docker, Kubernetes
